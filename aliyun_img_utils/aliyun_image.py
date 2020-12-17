@@ -88,6 +88,9 @@ class AliyunImage(object):
                     blob_name=blob_name
                 )
             )
+            return False
+
+        return True
 
     def upload_image_tarball(
         self,
