@@ -2,7 +2,7 @@
 
 """Aliyun image utils cli module."""
 
-# Copyright (c) 2020 SUSE LLC. All rights reserved.
+# Copyright (c) 2021 SUSE LLC. All rights reserved.
 #
 # This file is part of aliyun_img_utils. aliyun_img_utils provides an
 # api and command line utilities for handling images in the Aliyun Cloud.
@@ -184,7 +184,7 @@ def upload(
     logger = get_logger(config_data.log_level)
 
     with handle_errors(config_data.log_level, config_data.no_color):
-        uploader = AliyunImage(
+        aliyun_image = AliyunImage(
             config_data.access_key,
             config_data.access_secret,
             config_data.region,
@@ -206,7 +206,7 @@ def upload(
         if config_data.log_level != logging.ERROR:
             keyword_args['progress_callback'] = click_progress_callback
 
-        blob_name = uploader.upload_image_tarball(
+        blob_name = aliyun_image.upload_image_tarball(
             image_file,
             **keyword_args
         )
@@ -234,7 +234,7 @@ def delete(context, blob_name, **kwargs):
     logger = get_logger(config_data.log_level)
 
     with handle_errors(config_data.log_level, config_data.no_color):
-        uploader = AliyunImage(
+        aliyun_image = AliyunImage(
             config_data.access_key,
             config_data.access_secret,
             config_data.region,
@@ -248,7 +248,7 @@ def delete(context, blob_name, **kwargs):
         if config_data.log_level != logging.ERROR:
             keyword_args['progress_callback'] = click_progress_callback
 
-        deleted = uploader.delete_image_tarball(blob_name, **keyword_args)
+        deleted = aliyun_image.delete_image_tarball(blob_name, **keyword_args)
 
     if config_data.log_level != logging.ERROR and deleted:
         echo_style(

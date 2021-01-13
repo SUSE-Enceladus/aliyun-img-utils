@@ -53,7 +53,7 @@ aliyun_img_utils_config = namedtuple(
     sorted(defaults)
 )
 
-bar = None
+progress_bar = None
 
 
 def get_config(cli_context):
@@ -121,22 +121,22 @@ def handle_errors(log_level, no_color):
 
 def click_progress_callback(offset, total_size):
     """
-    Update the module level progress bar with image download progress.
+    Update the module level progress bar with image upload progress.
 
-    If download has finished flush stdout with render_finish.
+    If upload has finished flush stdout with render_finish.
     """
-    if not module.bar:
-        module.bar = click.progressbar(
+    if not module.progress_bar:
+        module.progress_bar = click.progressbar(
             length=total_size,
             label='Uploading image'
         )
 
-    read_size = offset - module.bar.pos
-    module.bar.update(read_size)
+    read_size = offset - module.progress_bar.pos
+    module.progress_bar.update(read_size)
 
-    if offset >= total_size and module.bar:
-        module.bar.render_finish()
-        module.bar = None
+    if offset >= total_size and module.progress_bar:
+        module.progress_bar.render_finish()
+        module.progress_bar = None
         return
 
 
