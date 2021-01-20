@@ -85,7 +85,7 @@ shared_options = [
     ),
     click.option(
         '--bucket-name',
-        type=click.Path(exists=True),
+        type=click.STRING,
         help='Storage bucket to store uploaded images.'
     ),
     click.option(
