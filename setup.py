@@ -52,7 +52,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'aliyun-img-utils=aliyun_img_utils.cli:main'
+            'aliyun-img-utils=aliyun_img_utils.aliyun_cli:main'
         ]
     },
     include_package_data=True,
