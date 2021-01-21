@@ -3,7 +3,7 @@
 
 """Aliyun img utils cli unit tests."""
 
-# Copyright (c) 2020 SUSE LLC. All rights reserved.
+# Copyright (c) 2021 SUSE LLC. All rights reserved.
 #
 # This file is part of aliyun_img_utils. aliyun_img_utils provides an
 # api and command line utilities for handling images in the Aliyun Cloud.
