@@ -68,7 +68,7 @@ class AliyunImage(object):
         except AttributeError:
             self.log_level = self.log.logger.level  # LoggerAdapter
 
-    def image_exists(self, blob_name):
+    def image_tarball_exists(self, blob_name):
         """Return True if image exists in the configured bucket."""
         try:
             self.bucket_client.get_object_meta(blob_name)
@@ -109,14 +109,14 @@ class AliyunImage(object):
         if not blob_name:
             blob_name = image_file.rsplit(os.sep, maxsplit=1)[-1]
 
-        if self.image_exists(blob_name) and not force_replace_image:
+        if self.image_tarball_exists(blob_name) and not force_replace_image:
             raise AliyunImageUploadException(
                 'Image {blob_name} already exists. To replace an existing '
                 'image use force_replace_image option.'.format(
                     blob_name=blob_name
                 )
             )
-        elif self.image_exists(blob_name) and force_replace_image:
+        elif self.image_tarball_exists(blob_name) and force_replace_image:
             self.delete_image_tarball(blob_name)
 
         kwargs = {}

@@ -80,13 +80,13 @@ class TestAliyunImage(object):
     def test_image_exists(self):
         client = Mock()
         self.image._bucket_client = client
-        assert self.image.image_exists('blob.vhd')
+        assert self.image.image_tarball_exists('blob.vhd')
 
         # Not exists
         client.get_object_meta.side_effect = oss2.exceptions.NoSuchKey(
             {}, {}, {}, {}
         )
-        assert self.image.image_exists('blob.vhd') is False
+        assert self.image.image_tarball_exists('blob.vhd') is False
 
     def test_delete_image_tarball(self):
         client = Mock()
