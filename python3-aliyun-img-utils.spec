@@ -53,7 +53,6 @@ install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/*.1 %{buildroot}/%{_mandir}/man1
 
 install -d -m 755 %{buildroot}%{_prefix}
-cp -r usr/* %{buildroot}%{_prefix}/
 
 %post
 %postun
