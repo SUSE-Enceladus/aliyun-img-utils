@@ -154,9 +154,9 @@ def image():
 )
 @click.option(
     '--page-size',
-    type=click.IntRange(min=1048576),
+    type=click.IntRange(min=100 * 1024),
     help='Size of page size chunks for image upload. '
-         'Minimum chunk size is 1MB.'
+         'Minimum chunk size is 100KB.'
 )
 @click.option(
     '--blob-name',
