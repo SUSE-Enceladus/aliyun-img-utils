@@ -2,7 +2,7 @@
 
 """Aliyun image utils exceptions module."""
 
-# Copyright (c) 2020 SUSE LLC. All rights reserved.
+# Copyright (c) 2021 SUSE LLC. All rights reserved.
 #
 # This file is part of aliyun_img_utils. aliyun_img_utils provides an
 # api and command line utilities for handling images in the Aliyun Cloud.
@@ -25,5 +25,13 @@ class AliyunException(Exception):
     """Generic exception for the aliyun_img_utils package."""
 
 
-class AliyunImageUploadException(AliyunException):
+class AliyunImageException(AliyunException):
+    """Exception for Aliyun image processes."""
+
+
+class AliyunImageUploadException(AliyunImageException):
     """Exception for Aliyun image upload processes."""
+
+
+class AliyunImageCreateException(AliyunImageException):
+    """Exception for Aliyun image create processes."""
