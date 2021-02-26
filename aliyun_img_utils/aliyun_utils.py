@@ -119,25 +119,24 @@ def handle_errors(log_level, no_color):
         sys.exit(1)
 
 
-def click_progress_callback(offset, total_size):
+def click_progress_callback(read_size, total_size, done=False):
     """
     Update the module level progress bar with image upload progress.
 
     If upload has finished flush stdout with render_finish.
     """
+    if done and module.progress_bar:
+        module.progress_bar.render_finish()
+        module.progress_bar = None
+        return
+
     if not module.progress_bar:
         module.progress_bar = click.progressbar(
             length=total_size,
             label='Uploading image'
         )
 
-    read_size = offset - module.progress_bar.pos
     module.progress_bar.update(read_size)
-
-    if offset >= total_size and module.progress_bar:
-        module.progress_bar.render_finish()
-        module.progress_bar = None
-        return
 
 
 def get_logger(log_level):
@@ -184,7 +183,7 @@ def put_blob(
     bucket_client,
     blob_name,
     image_file,
-    page_size=8 * 1024 * 1024,
+    page_size=10 * 1024 * 1024,
     progress_callback=None
 ):
     """Upload blob to bucket using multipart uploader."""
@@ -197,14 +196,16 @@ def put_blob(
         part_number = 1
         offset = 0
 
+        if progress_callback:
+            progress_callback(0, total_size)
+
         while offset < total_size:
             size_to_upload = min(part_size, total_size - offset)
             result = bucket_client.upload_part(
                 blob_name,
                 upload_id,
                 part_number,
-                oss2.SizedFileAdapter(image_obj, size_to_upload),
-                progress_callback=progress_callback
+                oss2.SizedFileAdapter(image_obj, size_to_upload)
             )
             parts.append(
                 oss2.models.PartInfo(
@@ -218,7 +219,10 @@ def put_blob(
             offset += size_to_upload
             part_number += 1
 
+            if progress_callback:
+                progress_callback(size_to_upload, total_size)
+
         if progress_callback:
-            progress_callback(offset, total_size)  # Last call to flush buffer
+            progress_callback(part_size, total_size, done=True)
 
         bucket_client.complete_multipart_upload(blob_name, upload_id, parts)
