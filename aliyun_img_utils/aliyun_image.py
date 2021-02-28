@@ -2,7 +2,7 @@
 
 """Aliyun image class module."""
 
-# Copyright (c) 2020 SUSE LLC. All rights reserved.
+# Copyright (c) 2021 SUSE LLC. All rights reserved.
 #
 # This file is part of aliyun_img_utils. aliyun_img_utils provides an
 # api and command line utilities for handling images in the Aliyun Cloud.
@@ -83,10 +83,8 @@ class AliyunImage(object):
 
         if response.status == 204:
             self.log.debug(
-                'Blob {blob_name} not found. '
-                'Nothing has been deleted.'.format(
-                    blob_name=blob_name
-                )
+                f'Blob {blob_name} not found. '
+                f'Nothing has been deleted.'
             )
             return False
 
@@ -111,10 +109,8 @@ class AliyunImage(object):
 
         if self.image_tarball_exists(blob_name) and not force_replace_image:
             raise AliyunImageUploadException(
-                'Image {blob_name} already exists. To replace an existing '
-                'image use force_replace_image option.'.format(
-                    blob_name=blob_name
-                )
+                f'Image {blob_name} already exists. To replace an existing '
+                f'image use force_replace_image option.'
             )
         elif self.image_tarball_exists(blob_name) and force_replace_image:
             self.delete_image_tarball(blob_name)
@@ -131,14 +127,12 @@ class AliyunImage(object):
             put_blob(self.bucket_client, blob_name, image_file, **kwargs)
         except FileNotFoundError:
             raise AliyunImageUploadException(
-                'Image file {image_file} not found. Ensure the path to'
-                ' the file is correct.'.format(image_file=image_file)
+                f'Image file {image_file} not found. Ensure the path to'
+                f' the file is correct.'
             )
         except oss2.exceptions.ServerError as error:
             raise AliyunImageUploadException(
-                'Unable to upload image: {error}'.format(
-                    error=str(error.details['Message'])
-                )
+                f'Unable to upload image: {str(error.details["Message"])}'
             )
         except oss2.exceptions.RequestError:
             raise AliyunImageUploadException(
@@ -147,9 +141,7 @@ class AliyunImage(object):
             )
         except Exception as error:
             raise AliyunImageUploadException(
-                'Unable to upload image: {error}'.format(
-                    error=str(error)
-                )
+                f'Unable to upload image: {str(error)}'
             )
 
         return blob_name
@@ -179,9 +171,8 @@ class AliyunImage(object):
                 self._bucket_client.get_bucket_info()  # Force eager auth
             except oss2.exceptions.ServerError as error:
                 raise AliyunException(
-                    'Unable to get bucket client: {error}'.format(
-                        error=str(error.details['Message'])
-                    )
+                    f'Unable to get bucket client: '
+                    f'{str(error.details["Message"])}'
                 )
             except oss2.exceptions.RequestError:
                 raise AliyunException(
@@ -191,9 +182,7 @@ class AliyunImage(object):
                 )
             except Exception as error:
                 raise AliyunException(
-                    'Unable to get bucket client: {error}'.format(
-                        error=str(error)
-                    )
+                    f'Unable to get bucket client: {str(error)}'
                 )
 
         return self._bucket_client
