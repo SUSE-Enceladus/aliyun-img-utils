@@ -213,7 +213,7 @@ def upload(
 
     if config_data.log_level != logging.ERROR:
         echo_style(
-            'Image uploaded as {blob_name}'.format(blob_name=blob_name),
+            f'Image uploaded as {blob_name}',
             config_data.no_color
         )
 
@@ -252,12 +252,12 @@ def delete(context, blob_name, **kwargs):
 
     if config_data.log_level != logging.ERROR and deleted:
         echo_style(
-            'Image deleted: {blob_name}'.format(blob_name=blob_name),
+            f'Image deleted: {blob_name}',
             config_data.no_color
         )
     elif config_data.log_level != logging.ERROR and not deleted:
         echo_style(
-            'Image does not exist: {blob_name}'.format(blob_name=blob_name),
+            f'Image does not exist: {blob_name}',
             config_data.no_color
         )
 

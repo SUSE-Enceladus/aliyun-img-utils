@@ -2,7 +2,7 @@
 
 """Aliyun image utils utilities module."""
 
-# Copyright (c) 2020 SUSE LLC. All rights reserved.
+# Copyright (c) 2021 SUSE LLC. All rights reserved.
 #
 # This file is part of aliyun_img_utils. aliyun_img_utils provides an
 # api and command line utilities for handling images in the Aliyun Cloud.
@@ -74,11 +74,9 @@ def get_config(cli_context):
             config_values = yaml.safe_load(config_file)
     except FileNotFoundError:
         echo_style(
-            'Config file: {config_file_path} not found. Using default '
-            'configuration values. See `aliyun config setup` for info on '
-            'setting up a config file for this profile.'.format(
-                config_file_path=config_file_path
-            ),
+            f'Config file: {config_file_path} not found. Using default '
+            f'configuration values. See `aliyun config setup` for info on '
+            f'setting up a config file for this profile.',
             no_color=True
         )
 
@@ -112,7 +110,7 @@ def handle_errors(log_level, no_color):
             raise
 
         echo_style(
-            "{}: {}".format(type(error).__name__, error),
+            f'{type(error).__name__}: {error}',
             no_color,
             fg='red'
         )
