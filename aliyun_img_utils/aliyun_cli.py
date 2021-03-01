@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import sys
 import click
 
 from aliyun_img_utils.aliyun_image import AliyunImage
@@ -220,15 +221,52 @@ def upload(
 
 @click.command()
 @click.option(
+    '--image-name',
+    type=click.STRING,
+    required=True,
+    help='Name of the newly created compute image.'
+)
+@click.option(
+    '--image-description',
+    type=click.STRING,
+    required=True,
+    help='Description for the newly created image.'
+)
+@click.option(
+    '--platform',
+    type=click.STRING,
+    required=True,
+    help='The distribution of the image operating system.'
+)
+@click.option(
     '--blob-name',
     type=click.STRING,
-    help='Name of the blob in the storage bucket. '
-         'To be deleted.',
-    required=True
+    required=True,
+    help='Name to use for blob in the storage bucket. By default '
+         'the filename from image file will be used.'
+)
+@click.option(
+    '--force-replace-image',
+    is_flag=True,
+    help='Delete the compute image prior to creation if it already exists.'
+)
+@click.option(
+    '--disk-size',
+    type=click.IntRange(min=5),
+    help='Size root disk in GB. Default is 20GB.'
 )
 @add_options(shared_options)
 @click.pass_context
-def delete(context, blob_name, **kwargs):
+def create(
+    context,
+    image_name,
+    image_description,
+    platform,
+    blob_name,
+    force_replace_image,
+    disk_size,
+    **kwargs
+):
     process_shared_options(context.obj, kwargs)
     config_data = get_config(context.obj)
     logger = get_logger(config_data.log_level)
@@ -243,25 +281,80 @@ def delete(context, blob_name, **kwargs):
             log_callback=logger
         )
 
-        keyword_args = {'blob_name': blob_name}
+        keyword_args = {
+            'force_replace_image': force_replace_image
+        }
 
-        if config_data.log_level != logging.ERROR:
-            keyword_args['progress_callback'] = click_progress_callback
+        if disk_size:
+            keyword_args['disk_image_size'] = disk_size
 
-        deleted = aliyun_image.delete_image_tarball(blob_name, **keyword_args)
+        image_id = aliyun_image.create_compute_image(
+            image_name,
+            image_description,
+            blob_name,
+            platform,
+            **keyword_args
+        )
+
+    if config_data.log_level != logging.ERROR:
+        echo_style(
+            f'Image created with id: {image_id}',
+            config_data.no_color
+        )
+
+
+@click.command()
+@click.option(
+    '--image-name',
+    type=click.STRING,
+    help='Name of the image to be deleted.',
+    required=True
+)
+@click.option(
+    '--delete-blob',
+    is_flag=True,
+    help='Also delete the image blob from storage bucket.'
+)
+@add_options(shared_options)
+@click.pass_context
+def delete(context, image_name, delete_blob, **kwargs):
+    process_shared_options(context.obj, kwargs)
+    config_data = get_config(context.obj)
+    logger = get_logger(config_data.log_level)
+
+    with handle_errors(config_data.log_level, config_data.no_color):
+        aliyun_image = AliyunImage(
+            config_data.access_key,
+            config_data.access_secret,
+            config_data.region,
+            config_data.bucket_name,
+            log_level=config_data.log_level,
+            log_callback=logger
+        )
+
+        keyword_args = {'delete_blob': delete_blob}
+
+        if click.confirm(f'Are you sure you want to delete {image_name}'):
+            deleted = aliyun_image.delete_compute_image(
+                image_name,
+                **keyword_args
+            )
+        else:
+            sys.exit(0)
 
     if config_data.log_level != logging.ERROR and deleted:
         echo_style(
-            f'Image deleted: {blob_name}',
+            f'Image deleted: {image_name}',
             config_data.no_color
         )
     elif config_data.log_level != logging.ERROR and not deleted:
         echo_style(
-            f'Image does not exist: {blob_name}',
+            f'Image does not exist: {image_name}',
             config_data.no_color
         )
 
 
+image.add_command(create)
 image.add_command(delete)
 image.add_command(upload)
 main.add_command(image)

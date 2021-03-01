@@ -21,6 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
 import oss2
 
 from unittest.mock import patch, Mock
@@ -30,6 +31,8 @@ from pytest import raises
 from aliyun_img_utils.aliyun_image import AliyunImage
 from aliyun_img_utils.aliyun_exceptions import (
     AliyunException,
+    AliyunImageException,
+    AliyunImageCreateException,
     AliyunImageUploadException
 )
 
@@ -77,7 +80,7 @@ class TestAliyunImage(object):
         with raises(AliyunException):
             assert self.image.bucket_client
 
-    def test_image_exists(self):
+    def test_image_tarball_exists(self):
         client = Mock()
         self.image._bucket_client = client
         assert self.image.image_tarball_exists('blob.vhd')
@@ -157,3 +160,105 @@ class TestAliyunImage(object):
                 progress_callback=callback,
                 force_replace_image=True
             )
+
+    @patch.object(AliyunImage, 'delete_image_tarball')
+    @patch.object(AliyunImage, 'get_compute_image')
+    def test_delete_compute_image(self, mock_get_image, mock_delete_tarball):
+        image = {
+            'ImageId': 'm-123',
+            'DiskDeviceMappings': {
+                'DiskDeviceMapping': [{'ImportOSSObject': 'test-blob'}]
+            }
+        }
+        mock_get_image.side_effect = [
+            image,
+            AliyunImageException,
+            AliyunImageException
+        ]
+
+        client = Mock()
+        self.image._compute_client = client
+
+        assert self.image.delete_compute_image(
+            'test-image',
+            delete_blob=True
+        )
+
+        # Image not exists
+        assert self.image.delete_compute_image(
+            'test-image',
+            delete_blob=True
+        ) is False
+
+    def test_compute_image_exists(self):
+        response = json.dumps({'Images': {'Image': [{'image1': 'info'}]}})
+        client = Mock()
+        client.do_action_with_exception.return_value = response
+        self.image._compute_client = client
+
+        assert self.image.image_exists('test-image')
+
+        # Not exists
+        client.do_action_with_exception.side_effect = Exception
+        assert self.image.image_exists('test-image') is False
+
+    @patch.object(AliyunImage, 'get_compute_image')
+    def test_create_compute_image(self, mock_get_image):
+        image = {'ImageId': 'm-123'}
+        response = json.dumps(image)
+        mock_get_image.return_value = image
+
+        client = Mock()
+        client.do_action_with_exception.return_value = response
+        self.image._compute_client = client
+
+        result = self.image.create_compute_image(
+            'test-image',
+            'test description',
+            'test-blob.qcow2',
+            'SLES'
+        )
+        assert result == 'm-123'
+
+        # Create failure
+        client.do_action_with_exception.return_value = Exception
+        with raises(AliyunImageCreateException):
+            self.image.create_compute_image(
+                'test-image',
+                'test description',
+                'test-blob.qcow2',
+                'SLES'
+            )
+
+    def test_get_regions(self):
+        response = json.dumps({
+            'Regions': {'Region': [{'RegionId': 'cn-beijing'}]}
+        })
+        client = Mock()
+        client.do_action_with_exception.return_value = response
+        self.image._compute_client = client
+
+        regions = self.image.get_regions()
+        assert 'cn-beijing' in regions
+
+        # Failed to get regions
+        client.do_action_with_exception.return_value = Exception
+
+        with raises(AliyunException):
+            self.image.get_regions()
+
+    def test_bucket_name_var(self):
+        client = Mock()
+        self.image._bucket_client = client
+
+        self.image.bucket_name = 'bucket2'
+        assert self.image._bucket_client is None
+
+    def test_region_var(self):
+        client = Mock()
+        self.image._bucket_client = client
+        self.image._compute_client = client
+
+        self.image.region = 'cn-beijing'
+        assert self.image._bucket_client is None
+        assert self.image._compute_client is None
