@@ -45,24 +45,24 @@ def test_print_license():
 
 
 @patch('aliyun_img_utils.aliyun_cli.AliyunImage')
-def test_cli_delete_tarball(mock_img_class):
+def test_cli_delete_image(mock_img_class):
     image_class = MagicMock()
     mock_img_class.return_value = image_class
-    image_class.delete_image_tarball.return_value = True
+    image_class.delete_compute_image.return_value = True
 
     args = [
-        'image', 'delete', '--blob-name', 'test.vhd', '--access-key',
+        'image', 'delete', '--image-name', 'test-image', '--access-key',
         '12345', '--access-secret', '54321', '--region', 'cn-beijing',
         '--bucket-name', 'test-bucket'
     ]
 
     runner = CliRunner()
-    result = runner.invoke(main, args)
+    result = runner.invoke(main, args, input='y\n')
     assert result.exit_code == 0
     assert 'Image deleted' in result.output
 
-    image_class.delete_image_tarball.return_value = False
-    result = runner.invoke(main, args)
+    image_class.delete_compute_image.return_value = False
+    result = runner.invoke(main, args, input='y\n')
     assert result.exit_code == 0
     assert 'Image does not exist' in result.output
 
@@ -83,6 +83,26 @@ def test_cli_upload_tarball(mock_img_class):
     result = runner.invoke(main, args)
     assert result.exit_code == 0
     assert 'Image uploaded' in result.output
+
+
+@patch('aliyun_img_utils.aliyun_cli.AliyunImage')
+def test_cli_create_image(mock_img_class):
+    image_class = MagicMock()
+    mock_img_class.return_value = image_class
+    image_class.create_compute_image.return_value = 'm-123456'
+
+    args = [
+        'image', 'create', '--image-name', 'test-image', '--access-key',
+        '12345', '--access-secret', '54321', '--region', 'cn-beijing',
+        '--bucket-name', 'test-bucket', '--image-description', 'test desc',
+        '--platform', 'SLES', '--blob-name', 'test.blob.qcow2', '--disk-size',
+        20
+    ]
+
+    runner = CliRunner()
+    result = runner.invoke(main, args)
+    assert result.exit_code == 0
+    assert 'Image created with id: m-123456' in result.output
 
 
 @patch('aliyun_img_utils.aliyun_cli.AliyunImage')
