@@ -96,7 +96,7 @@ class AliyunImage(object):
 
         return True
 
-    def delete_image_tarball(self, blob_name):
+    def delete_storage_blob(self, blob_name):
         """Delete blob if it exists in the configured bucket."""
         response = self.bucket_client.delete_object(blob_name)
 
@@ -132,7 +132,7 @@ class AliyunImage(object):
                 f'image use force_replace_image option.'
             )
         elif self.image_tarball_exists(blob_name) and force_replace_image:
-            self.delete_image_tarball(blob_name)
+            self.delete_storage_blob(blob_name)
 
         kwargs = {}
 
@@ -191,7 +191,7 @@ class AliyunImage(object):
 
         if delete_blob:
             device = image['DiskDeviceMappings']['DiskDeviceMapping'][0]
-            self.delete_image_tarball(device['ImportOSSObject'])
+            self.delete_storage_blob(device['ImportOSSObject'])
 
         return True
 

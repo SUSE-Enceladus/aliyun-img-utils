@@ -83,13 +83,13 @@ class TestAliyunImage(object):
     def test_image_tarball_exists(self):
         client = Mock()
         self.image._bucket_client = client
-        assert self.image.image_tarball_exists('blob.vhd')
+        assert self.image.image_tarball_exists('blob.qcow2')
 
         # Not exists
         client.get_object_meta.side_effect = oss2.exceptions.NoSuchKey(
             {}, {}, {}, {}
         )
-        assert self.image.image_tarball_exists('blob.vhd') is False
+        assert self.image.image_tarball_exists('blob.qcow2') is False
 
     def test_delete_image_tarball(self):
         client = Mock()
@@ -98,11 +98,11 @@ class TestAliyunImage(object):
         client.delete_object.return_value = response
         self.image._bucket_client = client
 
-        assert self.image.delete_image_tarball('blob.vhd')
+        assert self.image.delete_storage_blob('blob.qcow2')
 
         # Not exists
         response.status = 204
-        assert self.image.delete_image_tarball('blob.vhd') is False
+        assert self.image.delete_storage_blob('blob.qcow2') is False
 
     @patch('aliyun_img_utils.aliyun_image.put_blob')
     def test_upload_image_tarball(self, mock_put_blob):
@@ -111,7 +111,7 @@ class TestAliyunImage(object):
         self.image._bucket_client = client
 
         assert self.image.upload_image_tarball(
-            'tests/data/blob.vhd',
+            'tests/data/blob.qcow2',
             page_size=8 * 8 * 1024,
             progress_callback=callback,
             force_replace_image=True
@@ -121,7 +121,7 @@ class TestAliyunImage(object):
         mock_put_blob.side_effect = FileNotFoundError('Not there!')
         with raises(AliyunImageUploadException):
             self.image.upload_image_tarball(
-                'tests/data/blob.vhd',
+                'tests/data/blob.qcow2',
                 page_size=8 * 8 * 1024,
                 progress_callback=callback,
                 force_replace_image=True
@@ -133,7 +133,7 @@ class TestAliyunImage(object):
         )
         with raises(AliyunImageUploadException):
             self.image.upload_image_tarball(
-                'tests/data/blob.vhd',
+                'tests/data/blob.qcow2',
                 page_size=8 * 8 * 1024,
                 progress_callback=callback,
                 force_replace_image=True
@@ -145,7 +145,7 @@ class TestAliyunImage(object):
         )
         with raises(AliyunImageUploadException):
             self.image.upload_image_tarball(
-                'tests/data/blob.vhd',
+                'tests/data/blob.qcow2',
                 page_size=8 * 8 * 1024,
                 progress_callback=callback,
                 force_replace_image=True
@@ -155,13 +155,13 @@ class TestAliyunImage(object):
         mock_put_blob.side_effect = Exception('Failed')
         with raises(AliyunImageUploadException):
             self.image.upload_image_tarball(
-                'tests/data/blob.vhd',
+                'tests/data/blob.qcow2',
                 page_size=8 * 8 * 1024,
                 progress_callback=callback,
                 force_replace_image=True
             )
 
-    @patch.object(AliyunImage, 'delete_image_tarball')
+    @patch.object(AliyunImage, 'delete_storage_blob')
     @patch.object(AliyunImage, 'get_compute_image')
     def test_delete_compute_image(self, mock_get_image, mock_delete_tarball):
         image = {
