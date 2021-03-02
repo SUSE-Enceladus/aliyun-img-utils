@@ -242,8 +242,8 @@ def upload(
     '--blob-name',
     type=click.STRING,
     required=True,
-    help='Name to use for blob in the storage bucket. By default '
-         'the filename from image file will be used.'
+    help='Name for the blob in the storage bucket to use '
+         'to create the new image.'
 )
 @click.option(
     '--force-replace-image',
