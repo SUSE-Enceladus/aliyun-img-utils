@@ -38,7 +38,7 @@ with open('requirements-dev.txt') as req_file:
 
 setup(
     name='aliyun-img-utils',
-    version='0.0.1',
+    version='0.1.0',
     description='Package that provides utilities for '
                 'handling images in Aliyun Cloud.',
     long_description=readme,
