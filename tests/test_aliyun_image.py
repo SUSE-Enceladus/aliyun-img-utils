@@ -299,7 +299,7 @@ class TestAliyunImage(object):
         client.do_action_with_exception.return_value = response
         self.image._compute_client = client
 
-        self.image.publish_image_to_regions('test-image')
+        self.image.publish_image_to_regions('test-image', 'VISIBLE')
 
     @patch.object(AliyunImage, 'get_compute_image')
     def test_publish_image(self, mock_get_image):
@@ -311,12 +311,12 @@ class TestAliyunImage(object):
         client.do_action_with_exception.return_value = response
         self.image._compute_client = client
 
-        self.image.publish_image('test-image')
+        self.image.publish_image('test-image', 'VISIBLE')
 
         # Publish failure
         client.do_action_with_exception.side_effect = Exception
         with raises(AliyunImageException):
-            self.image.publish_image('test-image')
+            self.image.publish_image('test-image', 'VISIBLE')
 
     @patch.object(AliyunImage, 'deprecate_image')
     @patch.object(AliyunImage, 'get_regions')

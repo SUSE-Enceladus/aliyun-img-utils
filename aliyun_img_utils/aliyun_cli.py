@@ -405,11 +405,11 @@ def replicate(context, image_name, regions, **kwargs):
             regions = regions.split(',')
             keyword_args['regions'] = regions
 
-        aliyun_image.replicate_image(image_name, **keyword_args)
+        images = aliyun_image.replicate_image(image_name, **keyword_args)
 
     if config_data.log_level != logging.ERROR:
         echo_style(
-            f'Image replicated: {image_name}',
+            json.dumps(images, indent=2),
             config_data.no_color
         )
 
@@ -422,6 +422,12 @@ def replicate(context, image_name, regions, **kwargs):
     required=True
 )
 @click.option(
+    '--launch-permission',
+    type=click.STRING,
+    help='The launch permission to set for the published image.',
+    required=True
+)
+@click.option(
     '--regions',
     help='A comma separated list of region ids to '
          'publish the provided image in. If no regions '
@@ -430,7 +436,7 @@ def replicate(context, image_name, regions, **kwargs):
 )
 @add_options(shared_options)
 @click.pass_context
-def publish(context, image_name, regions, **kwargs):
+def publish(context, image_name, launch_permission, regions, **kwargs):
     """
     Publish a compute image in a set of regions.
 
@@ -457,7 +463,11 @@ def publish(context, image_name, regions, **kwargs):
             regions = regions.split(',')
             keyword_args['regions'] = regions
 
-        aliyun_image.publish_image_to_regions(image_name, **keyword_args)
+        aliyun_image.publish_image_to_regions(
+            image_name,
+            launch_permission,
+            **keyword_args
+        )
 
     if config_data.log_level != logging.ERROR:
         echo_style(

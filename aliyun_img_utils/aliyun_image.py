@@ -374,9 +374,15 @@ class AliyunImage(object):
                 self.compute_client.do_action_with_exception(request)
             )
         except Exception as error:
-            raise AliyunImageException(
-                f'Unable to copy image: {error}.'
+            self.log.error(
+                f'Failed to copy {source_image_name} to {self.region}: '
+                f'{error}.'
             )
+            raise AliyunImageException(
+                f'Failed to copy image: {error}.'
+            )
+
+        self.log.info(f'{image["ImageId"]} created in {self.region}')
 
         return response['ImageId']
 
@@ -389,6 +395,7 @@ class AliyunImage(object):
         if not regions:
             regions = self.get_regions()
 
+        images = {}
         for region in regions:
             if region == self.region:
                 continue
@@ -396,15 +403,13 @@ class AliyunImage(object):
             image_id = None
             try:
                 image_id = self.copy_compute_image(source_image_name, region)
-            except Exception as error:
-                self.log.error(
-                    f'Failed to copy {source_image_name} to {region}: '
-                    f'{error}.'
-                )
-            else:
-                self.log.info(f'{image_id} created in {region}')
+                images[region] = image_id
+            except Exception:
+                images[region] = None
 
-    def publish_image(self, source_image_name):
+        return images
+
+    def publish_image(self, source_image_name, launch_permission):
         """
         Publish compute image in current region.
         """
@@ -413,16 +418,27 @@ class AliyunImage(object):
         request = ModifyImageSharePermissionRequest()
         request.set_accept_format('json')
         request.set_ImageId(image['ImageId'])
-        request.set_LaunchPermission('HIDDEN')
+        request.set_LaunchPermission(launch_permission)
 
         try:
             self.compute_client.do_action_with_exception(request)
         except Exception as error:
+            self.log.error(
+                f'Failed to publish {source_image_name} in {self.region}: '
+                f'{error}.'
+            )
             raise AliyunImageException(
-                f'Unable to publish image: {error}.'
+                f'Failed to publish image: {error}.'
             )
 
-    def publish_image_to_regions(self, source_image_name, regions=None):
+        self.log.info(f'{source_image_name} published in {self.region}')
+
+    def publish_image_to_regions(
+        self,
+        source_image_name,
+        launch_permission,
+        regions=None
+    ):
         """
         Publish the compute image based on image name in all regions.
 
@@ -435,14 +451,9 @@ class AliyunImage(object):
             self.region = region
 
             try:
-                self.publish_image(source_image_name)
-            except Exception as error:
-                self.log.error(
-                    f'Failed to publish {source_image_name} in {region}: '
-                    f'{error}.'
-                )
-            else:
-                self.log.info(f'{source_image_name} published in {region}')
+                self.publish_image(source_image_name, launch_permission)
+            except Exception:
+                pass
 
     def deprecate_image(self, source_image_name):
         """
@@ -458,9 +469,15 @@ class AliyunImage(object):
         try:
             self.compute_client.do_action_with_exception(request)
         except Exception as error:
-            raise AliyunImageException(
-                f'Unable to deprecate image: {error}.'
+            self.log.error(
+                f'Failed to deprecate {source_image_name} in {self.region}: '
+                f'{error}.'
             )
+            raise AliyunImageException(
+                f'Failed to deprecate image: {error}.'
+            )
+
+        self.log.info(f'{source_image_name} deprecated in {self.region}')
 
     def deprecate_image_in_regions(self, source_image_name, regions=None):
         """
@@ -476,13 +493,8 @@ class AliyunImage(object):
 
             try:
                 self.deprecate_image(source_image_name)
-            except Exception as error:
-                self.log.error(
-                    f'Failed to deprecate {source_image_name} in {region}: '
-                    f'{error}.'
-                )
-            else:
-                self.log.info(f'{source_image_name} deprecated in {region}')
+            except Exception:
+                pass
 
     def activate_image(self, source_image_name):
         """
@@ -503,9 +515,15 @@ class AliyunImage(object):
         try:
             self.compute_client.do_action_with_exception(request)
         except Exception as error:
-            raise AliyunImageException(
-                f'Unable to activate image: {error}.'
+            self.log.error(
+                f'Failed to activate {source_image_name} in {self.region}: '
+                f'{error}.'
             )
+            raise AliyunImageException(
+                f'Failed to activate image: {error}.'
+            )
+
+        self.log.info(f'{source_image_name} activated in {self.region}')
 
     def activate_image_in_regions(self, source_image_name, regions=None):
         """
@@ -521,13 +539,8 @@ class AliyunImage(object):
 
             try:
                 self.activate_image(source_image_name)
-            except Exception as error:
-                self.log.error(
-                    f'Failed to activate {source_image_name} in {region}: '
-                    f'{error}.'
-                )
-            else:
-                self.log.info(f'{source_image_name} activated in {region}')
+            except Exception:
+                pass
 
     @property
     def bucket_client(self):
