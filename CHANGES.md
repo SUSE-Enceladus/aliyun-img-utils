@@ -1,3 +1,8 @@
+v1.0.0 (2021-03-15)
+===================
+
+- Add functions for replicate, publish and deprecate.
+
 v0.1.0 (2021-03-10)
 ===================
 
