@@ -123,3 +123,72 @@ def test_cli_exception(mock_img_class):
     result = runner.invoke(main, args)
     assert result.exit_code == 1
     assert 'Failure!' in result.output
+
+
+@patch('aliyun_img_utils.aliyun_cli.AliyunImage')
+def test_cli_replicate_image(mock_img_class):
+    image_class = MagicMock()
+    image_class.replicate_image.return_value = {
+        'cn-beijing': 'ami-123',
+        'cn-shanghai': 'ami-321'
+    }
+    mock_img_class.return_value = image_class
+
+    args = [
+        'image', 'replicate', '--image-name', 'test-image',
+        '--regions', 'cn-beijing,cn-shanghai'
+    ]
+
+    runner = CliRunner()
+    result = runner.invoke(main, args)
+    assert result.exit_code == 0
+    assert 'ami-123' in result.output
+
+
+@patch('aliyun_img_utils.aliyun_cli.AliyunImage')
+def test_cli_publish_image(mock_img_class):
+    image_class = MagicMock()
+    mock_img_class.return_value = image_class
+
+    args = [
+        'image', 'publish', '--image-name', 'test-image',
+        '--launch-permission', 'HIDDEN', '--regions',
+        'cn-beijing,cn-shanghai'
+    ]
+
+    runner = CliRunner()
+    result = runner.invoke(main, args)
+    assert result.exit_code == 0
+    assert 'Image published' in result.output
+
+
+@patch('aliyun_img_utils.aliyun_cli.AliyunImage')
+def test_cli_deprecate_image(mock_img_class):
+    image_class = MagicMock()
+    mock_img_class.return_value = image_class
+
+    args = [
+        'image', 'deprecate', '--image-name', 'test-image',
+        '--regions', 'cn-beijing,cn-shanghai'
+    ]
+
+    runner = CliRunner()
+    result = runner.invoke(main, args)
+    assert result.exit_code == 0
+    assert 'Image deprecated' in result.output
+
+
+@patch('aliyun_img_utils.aliyun_cli.AliyunImage')
+def test_cli_activate_image(mock_img_class):
+    image_class = MagicMock()
+    mock_img_class.return_value = image_class
+
+    args = [
+        'image', 'activate', '--image-name', 'test-image',
+        '--regions', 'cn-beijing,cn-shanghai'
+    ]
+
+    runner = CliRunner()
+    result = runner.invoke(main, args)
+    assert result.exit_code == 0
+    assert 'Image activated' in result.output

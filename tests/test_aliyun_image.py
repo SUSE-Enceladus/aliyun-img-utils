@@ -262,3 +262,132 @@ class TestAliyunImage(object):
         self.image.region = 'cn-beijing'
         assert self.image._bucket_client is None
         assert self.image._compute_client is None
+
+    @patch.object(AliyunImage, 'get_regions')
+    @patch.object(AliyunImage, 'get_compute_image')
+    def test_replicate_image(self, mock_get_image, mock_get_regions):
+        image = {'ImageId': 'm-123', 'Description': 'Test image'}
+        response = json.dumps(image)
+        mock_get_image.return_value = image
+        mock_get_regions.return_value = ['cn-shanghai']
+
+        client = Mock()
+        client.do_action_with_exception.return_value = response
+        self.image._compute_client = client
+
+        self.image.replicate_image('test-image')
+
+        # Replicate failure
+        client.do_action_with_exception.side_effect = Exception
+        self.image.replicate_image('test-image')
+
+    @patch.object(AliyunImage, 'publish_image')
+    @patch.object(AliyunImage, 'get_regions')
+    @patch.object(AliyunImage, 'get_compute_image')
+    def test_publish_image_to_regions(
+        self,
+        mock_get_image,
+        mock_get_regions,
+        mock_publish_image
+    ):
+        image = {'ImageId': 'm-123'}
+        response = json.dumps(image)
+        mock_get_image.return_value = image
+        mock_get_regions.return_value = ['cn-beijing']
+
+        client = Mock()
+        client.do_action_with_exception.return_value = response
+        self.image._compute_client = client
+
+        self.image.publish_image_to_regions('test-image', 'VISIBLE')
+
+    @patch.object(AliyunImage, 'get_compute_image')
+    def test_publish_image(self, mock_get_image):
+        image = {'ImageId': 'm-123'}
+        response = json.dumps(image)
+        mock_get_image.return_value = image
+
+        client = Mock()
+        client.do_action_with_exception.return_value = response
+        self.image._compute_client = client
+
+        self.image.publish_image('test-image', 'VISIBLE')
+
+        # Publish failure
+        client.do_action_with_exception.side_effect = Exception
+        with raises(AliyunImageException):
+            self.image.publish_image('test-image', 'VISIBLE')
+
+    @patch.object(AliyunImage, 'deprecate_image')
+    @patch.object(AliyunImage, 'get_regions')
+    @patch.object(AliyunImage, 'get_compute_image')
+    def test_deprecate_image_in_regions(
+        self,
+        mock_get_image,
+        mock_get_regions,
+        mock_deprecate_image
+    ):
+        image = {'ImageId': 'm-123'}
+        response = json.dumps(image)
+        mock_get_image.return_value = image
+        mock_get_regions.return_value = ['cn-beijing']
+
+        client = Mock()
+        client.do_action_with_exception.return_value = response
+        self.image._compute_client = client
+
+        self.image.deprecate_image_in_regions('test-image')
+
+    @patch.object(AliyunImage, 'get_compute_image')
+    def test_deprecate_image(self, mock_get_image):
+        image = {'ImageId': 'm-123'}
+        response = json.dumps(image)
+        mock_get_image.return_value = image
+
+        client = Mock()
+        client.do_action_with_exception.return_value = response
+        self.image._compute_client = client
+
+        self.image.deprecate_image('test-image')
+
+        # Deprecate failure
+        client.do_action_with_exception.side_effect = Exception
+        with raises(AliyunImageException):
+            self.image.deprecate_image('test-image')
+
+    @patch.object(AliyunImage, 'activate_image')
+    @patch.object(AliyunImage, 'get_regions')
+    @patch.object(AliyunImage, 'get_compute_image')
+    def test_activate_image_in_regions(
+        self,
+        mock_get_image,
+        mock_get_regions,
+        mock_activate_image
+    ):
+        image = {'ImageId': 'm-123'}
+        response = json.dumps(image)
+        mock_get_image.return_value = image
+        mock_get_regions.return_value = ['cn-beijing']
+
+        client = Mock()
+        client.do_action_with_exception.return_value = response
+        self.image._compute_client = client
+
+        self.image.activate_image_in_regions('test-image')
+
+    @patch.object(AliyunImage, 'get_compute_image')
+    def test_activate_image(self, mock_get_image):
+        image = {'ImageId': 'm-123'}
+        response = json.dumps(image)
+        mock_get_image.return_value = image
+
+        client = Mock()
+        client.do_action_with_exception.return_value = response
+        self.image._compute_client = client
+
+        self.image.activate_image('test-image')
+
+        # Activate failure
+        client.do_action_with_exception.side_effect = Exception
+        with raises(AliyunImageException):
+            self.image.activate_image('test-image')

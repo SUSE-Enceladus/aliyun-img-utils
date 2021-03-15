@@ -40,6 +40,15 @@ from aliyunsdkecs.request.v20140526.DescribeImagesRequest import (
 from aliyunsdkecs.request.v20140526.DescribeRegionsRequest import (
     DescribeRegionsRequest
 )
+from aliyunsdkecs.request.v20140526.CopyImageRequest import (
+    CopyImageRequest
+)
+from aliyunsdkecs.request.v20140526.ModifyImageSharePermissionRequest import (
+    ModifyImageSharePermissionRequest
+)
+from aliyunsdkecs.request.v20140526.ModifyImageAttributeRequest import (
+    ModifyImageAttributeRequest
+)
 
 from aliyun_img_utils.aliyun_exceptions import (
     AliyunException,
@@ -191,11 +200,18 @@ class AliyunImage(object):
 
         if delete_blob:
             device = image['DiskDeviceMappings']['DiskDeviceMapping'][0]
-            self.delete_storage_blob(device['ImportOSSObject'])
+
+            if 'ImportOSSObject' in device:
+                self.delete_storage_blob(device['ImportOSSObject'])
 
         return True
 
-    def get_compute_image(self, image_name=None, image_id=None):
+    def get_compute_image(
+        self,
+        image_name=None,
+        image_id=None,
+        is_deprecated=False
+    ):
         """
         Return compute image by name and/or id.
 
@@ -205,7 +221,7 @@ class AliyunImage(object):
         """
         if not image_name and not image_id:
             raise AliyunImageException(
-                'Image name and/or image id is required to get image.'
+                'Image name and/or image ID is required to get image.'
             )
 
         request = DescribeImagesRequest()
@@ -216,6 +232,9 @@ class AliyunImage(object):
 
         if image_id:
             request.set_ImageId(image_id)
+
+        if is_deprecated:
+            request.set_Status('Deprecated')
 
         try:
             response = json.loads(
@@ -336,6 +355,192 @@ class AliyunImage(object):
         self.wait_on_compute_image(response['ImageId'])
 
         return response['ImageId']
+
+    def copy_compute_image(self, source_image_name, destination_region):
+        """
+        Copy compute image to specified region.
+        """
+        image = self.get_compute_image(image_name=source_image_name)
+
+        request = CopyImageRequest()
+        request.set_accept_format('json')
+        request.set_ImageId(image['ImageId'])
+        request.set_DestinationImageName(source_image_name)
+        request.set_DestinationDescription(image['Description'])
+        request.set_DestinationRegionId(destination_region)
+
+        try:
+            response = json.loads(
+                self.compute_client.do_action_with_exception(request)
+            )
+        except Exception as error:
+            self.log.error(
+                f'Failed to copy {source_image_name} to {self.region}: '
+                f'{error}.'
+            )
+            raise AliyunImageException(
+                f'Failed to copy image: {error}.'
+            )
+
+        self.log.info(f'{image["ImageId"]} created in {self.region}')
+
+        return response['ImageId']
+
+    def replicate_image(self, source_image_name, regions=None):
+        """
+        Copy the compute image based on image name to all regions.
+
+        If a region list is not provided use all available regions.
+        """
+        if not regions:
+            regions = self.get_regions()
+
+        images = {}
+        for region in regions:
+            if region == self.region:
+                continue
+
+            image_id = None
+            try:
+                image_id = self.copy_compute_image(source_image_name, region)
+                images[region] = image_id
+            except Exception:
+                images[region] = None
+
+        return images
+
+    def publish_image(self, source_image_name, launch_permission):
+        """
+        Publish compute image in current region.
+        """
+        image = self.get_compute_image(image_name=source_image_name)
+
+        request = ModifyImageSharePermissionRequest()
+        request.set_accept_format('json')
+        request.set_ImageId(image['ImageId'])
+        request.set_LaunchPermission(launch_permission)
+
+        try:
+            self.compute_client.do_action_with_exception(request)
+        except Exception as error:
+            self.log.error(
+                f'Failed to publish {source_image_name} in {self.region}: '
+                f'{error}.'
+            )
+            raise AliyunImageException(
+                f'Failed to publish image: {error}.'
+            )
+
+        self.log.info(f'{source_image_name} published in {self.region}')
+
+    def publish_image_to_regions(
+        self,
+        source_image_name,
+        launch_permission,
+        regions=None
+    ):
+        """
+        Publish the compute image based on image name in all regions.
+
+        If a region list is not provided use all available regions.
+        """
+        if not regions:
+            regions = self.get_regions()
+
+        for region in regions:
+            self.region = region
+
+            try:
+                self.publish_image(source_image_name, launch_permission)
+            except Exception:
+                pass
+
+    def deprecate_image(self, source_image_name):
+        """
+        Deprecate compute image in current region.
+        """
+        image = self.get_compute_image(image_name=source_image_name)
+
+        request = ModifyImageAttributeRequest()
+        request.set_accept_format('json')
+        request.set_ImageId(image['ImageId'])
+        request.set_Status('Deprecated')
+
+        try:
+            self.compute_client.do_action_with_exception(request)
+        except Exception as error:
+            self.log.error(
+                f'Failed to deprecate {source_image_name} in {self.region}: '
+                f'{error}.'
+            )
+            raise AliyunImageException(
+                f'Failed to deprecate image: {error}.'
+            )
+
+        self.log.info(f'{source_image_name} deprecated in {self.region}')
+
+    def deprecate_image_in_regions(self, source_image_name, regions=None):
+        """
+        Deprecate the compute image based on image name in all regions.
+
+        If a region list is not provided use all available regions.
+        """
+        if not regions:
+            regions = self.get_regions()
+
+        for region in regions:
+            self.region = region
+
+            try:
+                self.deprecate_image(source_image_name)
+            except Exception:
+                pass
+
+    def activate_image(self, source_image_name):
+        """
+        Activate compute image in current region.
+
+        Sets the image status to available from a deprecated state.
+        """
+        image = self.get_compute_image(
+            image_name=source_image_name,
+            is_deprecated=True
+        )
+
+        request = ModifyImageAttributeRequest()
+        request.set_accept_format('json')
+        request.set_ImageId(image['ImageId'])
+        request.set_Status('Available')
+
+        try:
+            self.compute_client.do_action_with_exception(request)
+        except Exception as error:
+            self.log.error(
+                f'Failed to activate {source_image_name} in {self.region}: '
+                f'{error}.'
+            )
+            raise AliyunImageException(
+                f'Failed to activate image: {error}.'
+            )
+
+        self.log.info(f'{source_image_name} activated in {self.region}')
+
+    def activate_image_in_regions(self, source_image_name, regions=None):
+        """
+        Activate compute image in all regions.
+
+        If a region list is not provided use all available regions.
+        """
+        if not regions:
+            regions = self.get_regions()
+
+        for region in regions:
+            self.region = region
+
+            try:
+                self.activate_image(source_image_name)
+            except Exception:
+                pass
 
     @property
     def bucket_client(self):
