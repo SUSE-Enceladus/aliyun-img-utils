@@ -199,10 +199,15 @@ class AliyunImage(object):
         self.wait_on_compute_image_delete(image['ImageId'])
 
         if delete_blob:
-            device = image['DiskDeviceMappings']['DiskDeviceMapping'][0]
+            oss_object = None
+            try:
+                device = image['DiskDeviceMappings']['DiskDeviceMapping'][0]
+                oss_object = device['ImportOSSObject']
+            except (IndexError, KeyError):
+                pass
 
-            if 'ImportOSSObject' in device:
-                self.delete_storage_blob(device['ImportOSSObject'])
+            if oss_object:
+                self.delete_storage_blob(oss_object)
 
         return True
 
