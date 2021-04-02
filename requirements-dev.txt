@@ -2,5 +2,3 @@
 
 bumpversion
 pip>=7.0.0
-Sphinx
-sphinx-click
