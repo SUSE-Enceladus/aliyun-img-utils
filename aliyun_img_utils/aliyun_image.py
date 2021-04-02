@@ -174,7 +174,12 @@ class AliyunImage(object):
 
         return blob_name
 
-    def delete_compute_image(self, image_name, delete_blob=False):
+    def delete_compute_image(
+        self,
+        image_name,
+        delete_blob=False,
+        force=False
+    ):
         """
         Delete compute image in current region.
 
@@ -188,6 +193,9 @@ class AliyunImage(object):
         request = DeleteImageRequest()
         request.set_accept_format('json')
         request.set_ImageId(image['ImageId'])
+
+        if force:
+            request.set_Force(force)
 
         try:
             self.compute_client.do_action_with_exception(request)
