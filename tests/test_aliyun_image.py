@@ -191,6 +191,16 @@ class TestAliyunImage(object):
             delete_blob=True
         ) is False
 
+    @patch.object(AliyunImage, 'delete_compute_image')
+    @patch.object(AliyunImage, 'get_regions')
+    def test_delete_compute_image_in_regions(
+        self,
+        mock_get_regions,
+        mock_delete_image
+    ):
+        mock_get_regions.return_value = ['cn-beijing']
+        self.image.delete_compute_image_in_regions('test-image')
+
     def test_compute_image_exists(self):
         response = json.dumps({'Images': {'Image': [{'image1': 'info'}]}})
         client = Mock()

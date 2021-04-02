@@ -328,9 +328,16 @@ def create(
     help='Forcibly deletes the custom image, regardless of '
          'whether the image is being used by other instances.'
 )
+@click.option(
+    '--regions',
+    help='A comma separated list of region ids for '
+         'deleting the provided image. If no regions '
+         'are provided the image will be deleted in all '
+         'available regions.'
+)
 @add_options(shared_options)
 @click.pass_context
-def delete(context, image_name, delete_blob, force, **kwargs):
+def delete(context, image_name, delete_blob, force, regions, **kwargs):
     """Delete a compute image and optionally the backing qcow2 blob."""
     process_shared_options(context.obj, kwargs)
     config_data = get_config(context.obj)
@@ -351,24 +358,17 @@ def delete(context, image_name, delete_blob, force, **kwargs):
             'force': force
         }
 
+        if regions:
+            regions = regions.split(',')
+            keyword_args['regions'] = regions
+
         if click.confirm(f'Are you sure you want to delete {image_name}'):
-            deleted = aliyun_image.delete_compute_image(
+            aliyun_image.delete_compute_image_in_regions(
                 image_name,
                 **keyword_args
             )
         else:
             sys.exit(0)
-
-    if config_data.log_level != logging.ERROR and deleted:
-        echo_style(
-            f'Image deleted: {image_name}',
-            config_data.no_color
-        )
-    elif config_data.log_level != logging.ERROR and not deleted:
-        echo_style(
-            f'Image does not exist: {image_name}',
-            config_data.no_color
-        )
 
 
 @click.command()

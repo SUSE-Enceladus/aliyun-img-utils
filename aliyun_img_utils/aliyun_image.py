@@ -200,11 +200,16 @@ class AliyunImage(object):
         try:
             self.compute_client.do_action_with_exception(request)
         except Exception as error:
+            self.log.error(
+                f'Unable to delete {image_name} in {self.region}: '
+                f'{error}.'
+            )
             raise AliyunImageException(
-                f'Unable to delete image: {error}.'
+                f'Unable to delete image in {self.region}: {error}.'
             )
 
         self.wait_on_compute_image_delete(image['ImageId'])
+        self.log.info(f'{image["ImageId"]} deleted in {self.region}')
 
         if delete_blob:
             oss_object = None
@@ -218,6 +223,28 @@ class AliyunImage(object):
                 self.delete_storage_blob(oss_object)
 
         return True
+
+    def delete_compute_image_in_regions(
+        self,
+        image_name,
+        force=False,
+        regions=None
+    ):
+        """
+        Delete the compute image based on image name in all regions.
+
+        If a region list is not provided use all available regions.
+        """
+        if not regions:
+            regions = self.get_regions()
+
+        for region in regions:
+            self.region = region
+
+            try:
+                self.delete_compute_image(image_name, force=force)
+            except Exception:
+                pass
 
     def get_compute_image(
         self,
