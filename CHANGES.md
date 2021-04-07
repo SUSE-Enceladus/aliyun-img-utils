@@ -1,3 +1,11 @@
+v1.1.0 (2021-04-07)
+===================
+
+- Better handle optional delete of oss blob.
+- Add force delete option.
+- Add helper method for deleting compute image.
+- Cleanup and expand readme with examples.
+
 v1.0.0 (2021-03-15)
 ===================
 
