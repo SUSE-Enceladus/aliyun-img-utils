@@ -24,7 +24,6 @@ Testing Requirements
 
 - coverage
 - flake8
-- mock
 - pytest-cov
 
 Contribution Checklist
