@@ -322,9 +322,15 @@ def create(
     is_flag=True,
     help='Also delete the image blob from storage bucket.'
 )
+@click.option(
+    '--force',
+    is_flag=True,
+    help='Forcibly deletes the custom image, regardless of '
+         'whether the image is being used by other instances.'
+)
 @add_options(shared_options)
 @click.pass_context
-def delete(context, image_name, delete_blob, **kwargs):
+def delete(context, image_name, delete_blob, force, **kwargs):
     """Delete a compute image and optionally the backing qcow2 blob."""
     process_shared_options(context.obj, kwargs)
     config_data = get_config(context.obj)
@@ -340,7 +346,10 @@ def delete(context, image_name, delete_blob, **kwargs):
             log_callback=logger
         )
 
-        keyword_args = {'delete_blob': delete_blob}
+        keyword_args = {
+            'delete_blob': delete_blob,
+            'force': force
+        }
 
         if click.confirm(f'Are you sure you want to delete {image_name}'):
             deleted = aliyun_image.delete_compute_image(

@@ -181,7 +181,8 @@ class TestAliyunImage(object):
 
         assert self.image.delete_compute_image(
             'test-image',
-            delete_blob=True
+            delete_blob=True,
+            force=True
         )
 
         # Image not exists
