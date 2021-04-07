@@ -48,23 +48,16 @@ def test_print_license():
 def test_cli_delete_image(mock_img_class):
     image_class = MagicMock()
     mock_img_class.return_value = image_class
-    image_class.delete_compute_image.return_value = True
 
     args = [
         'image', 'delete', '--image-name', 'test-image', '--access-key',
         '12345', '--access-secret', '54321', '--region', 'cn-beijing',
-        '--bucket-name', 'test-bucket'
+        '--bucket-name', 'test-bucket', '--regions', 'cn-shanghai'
     ]
 
     runner = CliRunner()
     result = runner.invoke(main, args, input='y\n')
     assert result.exit_code == 0
-    assert 'Image deleted' in result.output
-
-    image_class.delete_compute_image.return_value = False
-    result = runner.invoke(main, args, input='y\n')
-    assert result.exit_code == 0
-    assert 'Image does not exist' in result.output
 
 
 @patch('aliyun_img_utils.aliyun_cli.AliyunImage')
