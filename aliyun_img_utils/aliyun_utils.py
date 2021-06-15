@@ -171,10 +171,26 @@ def get_storage_auth(access_key, access_secret):
     return oss2.Auth(access_key, access_secret)
 
 
-def get_storage_bucket_client(auth, bucket_name, region):
+def get_storage_bucket_client(
+    auth,
+    bucket_name,
+    region,
+    transfer_acceleration=True,
+    connect_timeout=180
+):
     """Get authenticated storage bucket client."""
-    endpoint = 'https://oss-{region}.aliyuncs.com'.format(region=region)
-    return oss2.Bucket(auth, endpoint, bucket_name)
+    if transfer_acceleration:
+        location = 'accelerate'
+    else:
+        location = region
+
+    endpoint = f'https://oss-{location}.aliyuncs.com'
+    return oss2.Bucket(
+        auth,
+        endpoint,
+        bucket_name,
+        connect_timeout=connect_timeout
+    )
 
 
 def put_blob(

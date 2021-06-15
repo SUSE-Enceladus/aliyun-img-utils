@@ -75,11 +75,15 @@ class AliyunImage(object):
         region,
         bucket_name=None,
         log_level=logging.INFO,
-        log_callback=None
+        log_callback=None,
+        transfer_acceleration=True,
+        timeout=180
     ):
         """Initialize class and setup logging."""
         self.access_key = access_key
         self.access_secret = access_secret
+        self.transfer_acceleration = transfer_acceleration
+        self.timeout = timeout
         self._region = region
         self._bucket_name = bucket_name
         self._bucket_client = None
@@ -600,7 +604,9 @@ class AliyunImage(object):
             self._bucket_client = get_storage_bucket_client(
                 auth,
                 self.bucket_name,
-                self.region
+                self.region,
+                self.transfer_acceleration,
+                self.timeout
             )
 
             try:

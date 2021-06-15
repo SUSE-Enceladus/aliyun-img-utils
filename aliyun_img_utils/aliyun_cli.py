@@ -171,6 +171,28 @@ def image():
     is_flag=True,
     help='Delete the image prior to upload if it already exists.'
 )
+@click.option(
+    '--timeout',
+    type=click.IntRange(min=1),
+    default=180,
+    help='Session timeout (in minutes) for image upload. '
+         'Default is 180 minutes.'
+)
+@click.option(
+    '--direct-transfer',
+    'transfer_acceleration',
+    flag_value=False,
+    help='Upload directly to region endpoint with no acceleration.'
+)
+@click.option(
+    '--accelerated-transfer',
+    'transfer_acceleration',
+    flag_value=True,
+    default=True,
+    help='(Default) Use transfer acceleration for image upload. '
+         'See docs for more info: '
+         'https://www.alibabacloud.com/help/doc-detail/131312.htm.'
+)
 @add_options(shared_options)
 @click.pass_context
 def upload(
@@ -179,6 +201,8 @@ def upload(
     page_size,
     blob_name,
     force_replace_image,
+    timeout,
+    transfer_acceleration,
     **kwargs
 ):
     """
@@ -195,7 +219,9 @@ def upload(
             config_data.region,
             config_data.bucket_name,
             log_level=config_data.log_level,
-            log_callback=logger
+            log_callback=logger,
+            transfer_acceleration=transfer_acceleration,
+            timeout=timeout
         )
 
         keyword_args = {
