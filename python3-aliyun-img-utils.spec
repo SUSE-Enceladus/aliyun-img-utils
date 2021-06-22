@@ -17,7 +17,7 @@
 
 
 Name:           python3-aliyun-img-utils
-Version:        1.1.0
+Version:        1.2.0
 Release:        0
 Summary:        Command line utility for handling images in the Aliyun Cloud
 License:        GPL-3.0-or-later
