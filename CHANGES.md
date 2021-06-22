@@ -1,3 +1,8 @@
+v1.2.0 (2021-06-22)
+===================
+
+- Add timeout and accelerated transfer options. 
+
 v1.1.0 (2021-04-07)
 ===================
 
