@@ -31,6 +31,16 @@ import oss2
 from collections import namedtuple, ChainMap
 from contextlib import contextmanager
 
+from aliyunsdkcore.client import AcsClient
+from aliyunsdkecs.request.v20140526.ImportKeyPairRequest import (
+    ImportKeyPairRequest
+)
+from aliyunsdkecs.request.v20140526.DeleteKeyPairsRequest import (
+    DeleteKeyPairsRequest
+)
+
+from aliyun_img_utils.aliyun_exceptions import AliyunException
+
 
 module = sys.modules[__name__]
 
@@ -240,3 +250,54 @@ def put_blob(
             progress_callback(part_size, total_size, done=True)
 
         bucket_client.complete_multipart_upload(blob_name, upload_id, parts)
+
+
+def get_compute_client(access_key, access_secret, region):
+    """
+    Returns a compute client instance.
+    """
+    try:
+        compute_client = AcsClient(
+            access_key,
+            access_secret,
+            region
+        )
+    except Exception as error:
+        raise AliyunException(
+            f'Unable to get compute client: {error}'
+        )
+
+    return compute_client
+
+
+def import_key_pair(name, public_key, client):
+    """
+    Create a new key pair using the provided public key.
+    """
+    request = ImportKeyPairRequest()
+    request.set_accept_format('json')
+    request.set_KeyPairName(name)
+    request.set_PublicKeyBody(public_key)
+
+    try:
+        client.do_action_with_exception(request)
+    except Exception as error:
+        raise AliyunException(
+            f'Unable to create key pair {name}: {error}.'
+        )
+
+
+def delete_key_pair(name, client):
+    """
+    Delete key pair matching the name given.
+    """
+    request = DeleteKeyPairsRequest()
+    request.set_accept_format('json')
+    request.set_KeyPairNames(f'["{name}"]')
+
+    try:
+        client.do_action_with_exception(request)
+    except Exception as error:
+        raise AliyunException(
+            f'Unable to create key pair {name}: {error}.'
+        )
