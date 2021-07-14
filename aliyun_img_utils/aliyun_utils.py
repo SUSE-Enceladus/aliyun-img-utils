@@ -30,6 +30,8 @@ import oss2
 
 from collections import namedtuple, ChainMap
 from contextlib import contextmanager
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkecs.request.v20140526.ImportKeyPairRequest import (
@@ -301,3 +303,19 @@ def delete_key_pair(name, client):
         raise AliyunException(
             f'Unable to create key pair {name}: {error}.'
         )
+
+
+def get_todays_date(date_format='%Y%m%d'):
+    """Return a formatted string of todays date"""
+    return date.today().strftime(date_format)
+
+
+def get_future_date(months=6, date_format='%Y%m%d'):
+    """
+    Return a formatted string of a date in the future.
+
+    By default th date is 6 months from now.
+    """
+    today = date.today()
+    future_date = today + relativedelta(months=int(months))
+    return future_date.strftime(date_format)

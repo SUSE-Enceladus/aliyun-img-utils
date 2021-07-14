@@ -525,9 +525,27 @@ def publish(context, image_name, launch_permission, regions, **kwargs):
          'are provided the image will be deprecated in all '
          'available regions.'
 )
+@click.option(
+    '--replacement-image',
+    type=click.STRING,
+    help='Name of the replacement image.',
+)
+@click.option(
+    '--deprecation-period',
+    type=click.INT,
+    default=6,
+    help='Period in months the image will be deprecated before deletion.',
+)
 @add_options(shared_options)
 @click.pass_context
-def deprecate(context, image_name, regions, **kwargs):
+def deprecate(
+    context,
+    image_name,
+    regions,
+    replacement_image,
+    deprecation_period,
+    **kwargs
+):
     """
     Deprecate compute in a set of regions.
 
@@ -545,7 +563,8 @@ def deprecate(context, image_name, regions, **kwargs):
             config_data.region,
             config_data.bucket_name,
             log_level=config_data.log_level,
-            log_callback=logger
+            log_callback=logger,
+            deprecation_period=deprecation_period
         )
 
         keyword_args = {}
@@ -553,6 +572,9 @@ def deprecate(context, image_name, regions, **kwargs):
         if regions:
             regions = regions.split(',')
             keyword_args['regions'] = regions
+
+        if replacement_image:
+            keyword_args['replacement_image'] = replacement_image
 
         aliyun_image.deprecate_image_in_regions(image_name, **keyword_args)
 
