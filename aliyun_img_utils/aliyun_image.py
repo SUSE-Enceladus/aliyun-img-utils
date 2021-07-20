@@ -49,6 +49,9 @@ from aliyunsdkecs.request.v20140526.ModifyImageSharePermissionRequest import (
 from aliyunsdkecs.request.v20140526.ModifyImageAttributeRequest import (
     ModifyImageAttributeRequest
 )
+from aliyunsdkecs.request.v20140526.TagResourcesRequest import (
+    TagResourcesRequest
+)
 
 from aliyun_img_utils.aliyun_exceptions import (
     AliyunException,
@@ -59,7 +62,9 @@ from aliyun_img_utils.aliyun_exceptions import (
 from aliyun_img_utils.aliyun_utils import (
     get_storage_auth,
     get_storage_bucket_client,
-    put_blob
+    put_blob,
+    get_todays_date,
+    get_future_date
 )
 
 
@@ -77,17 +82,21 @@ class AliyunImage(object):
         log_level=logging.INFO,
         log_callback=None,
         transfer_acceleration=True,
-        timeout=180
+        timeout=180,
+        deprecation_period=6
     ):
         """Initialize class and setup logging."""
         self.access_key = access_key
         self.access_secret = access_secret
         self.transfer_acceleration = transfer_acceleration
         self.timeout = timeout
+        self.deprecation_period = deprecation_period
         self._region = region
         self._bucket_name = bucket_name
         self._bucket_client = None
         self._compute_client = None
+        self._deprecation_date = None
+        self._deletion_date = None
 
         if log_callback:
             self.log = log_callback
@@ -499,7 +508,39 @@ class AliyunImage(object):
             except Exception:
                 pass
 
-    def deprecate_image(self, source_image_name):
+    def generate_deprecation_tags(self, replacement_image=None):
+        """
+        Create a list of deprecation tags.
+
+        If the replacement image is provided include Replacement
+        image tag.
+        """
+        tags = [
+            {
+                'Key': 'Deprecated on',
+                'Value': self.deprecation_date
+            },
+            {
+                'Key': 'Removal date',
+                'Value': self.deletion_date
+            }
+        ]
+
+        if replacement_image:
+            tags.append(
+                {
+                    'Key': 'Replacement image',
+                    'Value': replacement_image
+                }
+            )
+
+        return tags
+
+    def deprecate_image(
+        self,
+        source_image_name,
+        replacement_image=None
+    ):
         """
         Deprecate compute image in current region.
         """
@@ -521,9 +562,17 @@ class AliyunImage(object):
                 f'Failed to deprecate image: {error}.'
             )
 
+        tags = self.generate_deprecation_tags(replacement_image)
+        self.add_image_tags(image['ImageId'], tags)
+
         self.log.info(f'{source_image_name} deprecated in {self.region}')
 
-    def deprecate_image_in_regions(self, source_image_name, regions=None):
+    def deprecate_image_in_regions(
+        self,
+        source_image_name,
+        regions=None,
+        replacement_image=None
+    ):
         """
         Deprecate the compute image based on image name in all regions.
 
@@ -536,7 +585,7 @@ class AliyunImage(object):
             self.region = region
 
             try:
-                self.deprecate_image(source_image_name)
+                self.deprecate_image(source_image_name, replacement_image)
             except Exception:
                 pass
 
@@ -585,6 +634,29 @@ class AliyunImage(object):
                 self.activate_image(source_image_name)
             except Exception:
                 pass
+
+    def add_image_tags(self, image_id, tags):
+        """
+        Add the list of tags to the image.
+        """
+        request = TagResourcesRequest()
+        request.set_accept_format('json')
+        request.set_ResourceType('image')
+        request.set_ResourceIds([image_id])
+        request.set_Tags(tags)
+
+        try:
+            self.compute_client.do_action_with_exception(request)
+        except Exception as error:
+            self.log.error(
+                f'Failed to add tags to image {image_id} '
+                f'in {self.region}: {error}.'
+            )
+            raise AliyunImageException(
+                f'Failed to add tags to image: {error}.'
+            )
+
+        self.log.info(f'Tags added to {image_id} in {self.region}')
 
     @property
     def bucket_client(self):
@@ -700,3 +772,21 @@ class AliyunImage(object):
         self._region = region_name
         self._bucket_client = None  # Reset bucket client
         self._compute_client = None  # Reset compute client
+
+    @property
+    def deprecation_date(self):
+        """Lazy deprecate date string property."""
+        if not self._deprecation_date:
+            self._deprecation_date = get_todays_date()
+
+        return self._deprecation_date
+
+    @property
+    def deletion_date(self):
+        """Lazy deletion date string property."""
+        if not self._deletion_date:
+            self._deletion_date = get_future_date(
+                months=self.deprecation_period
+            )
+
+        return self._deletion_date

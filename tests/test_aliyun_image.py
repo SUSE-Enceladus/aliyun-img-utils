@@ -349,8 +349,9 @@ class TestAliyunImage(object):
 
         self.image.deprecate_image_in_regions('test-image')
 
+    @patch.object(AliyunImage, 'add_image_tags')
     @patch.object(AliyunImage, 'get_compute_image')
-    def test_deprecate_image(self, mock_get_image):
+    def test_deprecate_image(self, mock_get_image, mock_add_tags):
         image = {'ImageId': 'm-123'}
         response = json.dumps(image)
         mock_get_image.return_value = image
@@ -360,6 +361,7 @@ class TestAliyunImage(object):
         self.image._compute_client = client
 
         self.image.deprecate_image('test-image')
+        assert mock_add_tags.call_count == 1
 
         # Deprecate failure
         client.do_action_with_exception.side_effect = Exception
@@ -402,3 +404,16 @@ class TestAliyunImage(object):
         client.do_action_with_exception.side_effect = Exception
         with raises(AliyunImageException):
             self.image.activate_image('test-image')
+
+    def test_add_tags_to_image(self):
+        tags = [{'Replacement image': 'i-123456'}]
+
+        client = Mock()
+        self.image._compute_client = client
+
+        self.image.add_image_tags('m-123', tags)
+
+        # Activate failure
+        client.do_action_with_exception.side_effect = Exception
+        with raises(AliyunImageException):
+            self.image.add_image_tags('m-123', tags)

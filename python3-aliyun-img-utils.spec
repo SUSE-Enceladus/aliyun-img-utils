@@ -30,6 +30,7 @@ BuildRequires:  python3-click-man
 BuildRequires:  python3-oss2
 BuildRequires:  python3-aliyun-python-sdk-core
 BuildRequires:  python3-aliyun-python-sdk-ecs
+BuildRequires:  python3-python-dateutil
 BuildRequires:  python3-pytest
 BuildRequires:  python3-coverage
 BuildRequires:  python3-pytest-cov
@@ -38,6 +39,7 @@ Requires:       python3-click
 Requires:       python3-oss2
 Requires:       python3-aliyun-python-sdk-core
 Requires:       python3-aliyun-python-sdk-ecs
+Requires:       python3-python-dateutil
 
 %description
 aliyun_img_utils provides an api and command line 
