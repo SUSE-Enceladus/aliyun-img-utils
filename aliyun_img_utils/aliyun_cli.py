@@ -519,6 +519,12 @@ def publish(context, image_name, launch_permission, regions, **kwargs):
     required=True
 )
 @click.option(
+    '--launch-permission',
+    type=click.STRING,
+    help='The launch permission to set for the deprecated image.',
+    required=True
+)
+@click.option(
     '--regions',
     help='A comma separated list of region ids to '
          'deprecate the provided image in. If no regions '
@@ -541,6 +547,7 @@ def publish(context, image_name, launch_permission, regions, **kwargs):
 def deprecate(
     context,
     image_name,
+    launch_permission,
     regions,
     replacement_image,
     deprecation_period,
@@ -576,7 +583,11 @@ def deprecate(
         if replacement_image:
             keyword_args['replacement_image'] = replacement_image
 
-        aliyun_image.deprecate_image_in_regions(image_name, **keyword_args)
+        aliyun_image.deprecate_image_in_regions(
+            image_name,
+            launch_permission,
+            **keyword_args
+        )
 
     if config_data.log_level != logging.ERROR:
         echo_style(
