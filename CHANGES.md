@@ -1,3 +1,10 @@
+v1.5.0 (2021-10-11)
+===================
+
+- Un-share image before deprecation.
+- Fix copy image log message.
+- Add wait on blob method after upload finishes.
+
 v1.4.0 (2021-07-21)
 ===================
 
