@@ -435,7 +435,7 @@ class AliyunImage(object):
                 f'Failed to copy image: {error}.'
             )
 
-        self.log.info(f'{image["ImageId"]} created in {self.region}')
+        self.log.info(f'{response["ImageId"]} created in {self.region}')
 
         return response['ImageId']
 
