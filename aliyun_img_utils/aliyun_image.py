@@ -118,6 +118,27 @@ class AliyunImage(object):
 
         return True
 
+    def wait_on_blob(self, blob_name):
+        """
+        Wait for the storage blob to show up in bucket.
+
+        If it doesn't show up in 5 mintues raise exception.
+        """
+        start = time.time()
+        end = start + 300
+
+        while time.time() < end:
+            exists = self.image_tarball_exists(blob_name)
+
+            if not exists:
+                time.sleep(10)
+            else:
+                return
+
+        raise AliyunImageException(
+            'Blob not available within 5 minutes.'
+        )
+
     def delete_storage_blob(self, blob_name):
         """Delete blob if it exists in the configured bucket."""
         response = self.bucket_client.delete_object(blob_name)
@@ -184,6 +205,9 @@ class AliyunImage(object):
             raise AliyunImageUploadException(
                 f'Unable to upload image: {str(error)}'
             )
+
+        # Blob upload takes time to finish up
+        self.wait_on_blob(blob_name)
 
         return blob_name
 
