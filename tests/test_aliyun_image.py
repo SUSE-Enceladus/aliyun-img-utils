@@ -91,6 +91,11 @@ class TestAliyunImage(object):
         )
         assert self.image.image_tarball_exists('blob.qcow2') is False
 
+    @patch.object(AliyunImage, 'image_tarball_exists')
+    def test_wait_on_blob(self, mock_image_tarball_exists):
+        mock_image_tarball_exists.return_value = True
+        self.image.wait_on_blob('blob.qcow2')
+
     def test_delete_image_tarball(self):
         client = Mock()
         response = Mock()
@@ -104,8 +109,9 @@ class TestAliyunImage(object):
         response.status = 204
         assert self.image.delete_storage_blob('blob.qcow2') is False
 
+    @patch.object(AliyunImage, 'wait_on_blob')
     @patch('aliyun_img_utils.aliyun_image.put_blob')
-    def test_upload_image_tarball(self, mock_put_blob):
+    def test_upload_image_tarball(self, mock_put_blob, mock_wait_on_blob):
         callback = Mock()
         client = Mock()
         self.image._bucket_client = client
