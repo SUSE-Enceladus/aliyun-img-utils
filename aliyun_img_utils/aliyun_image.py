@@ -536,15 +536,39 @@ class AliyunImage(object):
 
         return tags
 
+    def unshare_image(self, image_id, launch_permission):
+        """
+        Un-share compute image in current region.
+        """
+        request = ModifyImageSharePermissionRequest()
+        request.set_accept_format('json')
+        request.set_ImageId(image_id)
+        request.set_LaunchPermission(launch_permission)
+
+        try:
+            self.compute_client.do_action_with_exception(request)
+        except Exception as error:
+            self.log.error(
+                f'Failed to un-share {image_id} in {self.region}: '
+                f'{error}.'
+            )
+            raise AliyunImageException(
+                f'Failed to un-share image: {error}.'
+            )
+
+        self.log.info(f'{image_id} un-shared in {self.region}')
+
     def deprecate_image(
         self,
         source_image_name,
+        launch_permission,
         replacement_image=None
     ):
         """
         Deprecate compute image in current region.
         """
         image = self.get_compute_image(image_name=source_image_name)
+        self.unshare_image(image['ImageId'], launch_permission)
 
         request = ModifyImageAttributeRequest()
         request.set_accept_format('json')
@@ -570,6 +594,7 @@ class AliyunImage(object):
     def deprecate_image_in_regions(
         self,
         source_image_name,
+        launch_permission,
         regions=None,
         replacement_image=None
     ):
@@ -585,7 +610,11 @@ class AliyunImage(object):
             self.region = region
 
             try:
-                self.deprecate_image(source_image_name, replacement_image)
+                self.deprecate_image(
+                    source_image_name,
+                    launch_permission,
+                    replacement_image
+                )
             except Exception:
                 pass
 
