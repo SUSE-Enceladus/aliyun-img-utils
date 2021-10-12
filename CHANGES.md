@@ -1,3 +1,10 @@
+v1.6.0 (2021-10-12)
+===================
+
+- Revert deprecation changes
+- Image remains available and shared on deprecation. Only the
+  deprecation tags are added to the image.
+
 v1.5.0 (2021-10-11)
 ===================
 
