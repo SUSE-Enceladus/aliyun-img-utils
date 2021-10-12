@@ -162,8 +162,7 @@ def test_cli_deprecate_image(mock_img_class):
 
     args = [
         'image', 'deprecate', '--image-name', 'test-image',
-        '--launch-permission', 'FAKE', '--regions',
-        'cn-beijing,cn-shanghai'
+        '--regions', 'cn-beijing,cn-shanghai'
     ]
 
     runner = CliRunner()
