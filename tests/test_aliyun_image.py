@@ -335,18 +335,6 @@ class TestAliyunImage(object):
         with raises(AliyunImageException):
             self.image.publish_image('test-image', 'VISIBLE')
 
-    def test_unshare_image(self):
-        client = Mock()
-        client.do_action_with_exception.return_value = None
-        self.image._compute_client = client
-
-        self.image.unshare_image('m-123', 'FAKE')
-
-        # Deprecate failure
-        client.do_action_with_exception.side_effect = Exception
-        with raises(AliyunImageException):
-            self.image.unshare_image('m-123', 'FAKE')
-
     @patch.object(AliyunImage, 'deprecate_image')
     @patch.object(AliyunImage, 'get_regions')
     @patch.object(AliyunImage, 'get_compute_image')
@@ -365,33 +353,20 @@ class TestAliyunImage(object):
         client.do_action_with_exception.return_value = response
         self.image._compute_client = client
 
-        self.image.deprecate_image_in_regions('test-image', 'FAKE')
+        self.image.deprecate_image_in_regions('test-image')
 
-    @patch.object(AliyunImage, 'unshare_image')
     @patch.object(AliyunImage, 'add_image_tags')
     @patch.object(AliyunImage, 'get_compute_image')
     def test_deprecate_image(
         self,
         mock_get_image,
-        mock_add_tags,
-        mock_unshare
+        mock_add_tags
     ):
         image = {'ImageId': 'm-123'}
-        response = json.dumps(image)
         mock_get_image.return_value = image
 
-        client = Mock()
-        client.do_action_with_exception.return_value = response
-        self.image._compute_client = client
-
-        self.image.deprecate_image('test-image', 'FAKE')
+        self.image.deprecate_image('test-image')
         assert mock_add_tags.call_count == 1
-        assert mock_unshare.call_count == 1
-
-        # Deprecate failure
-        client.do_action_with_exception.side_effect = Exception
-        with raises(AliyunImageException):
-            self.image.deprecate_image('test-image', 'FAKE')
 
     @patch.object(AliyunImage, 'activate_image')
     @patch.object(AliyunImage, 'get_regions')
