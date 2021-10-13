@@ -486,7 +486,7 @@ class AliyunImage(object):
 
         return images
 
-    def publish_image(self, source_image_name, launch_permission):
+    def set_launch_permission(self, source_image_name, launch_permission):
         """
         Publish compute image in current region.
         """
@@ -501,16 +501,16 @@ class AliyunImage(object):
             self.compute_client.do_action_with_exception(request)
         except Exception as error:
             self.log.error(
-                f'Failed to publish {source_image_name} in {self.region}: '
-                f'{error}.'
+                f'Failed to set launch permission to {launch_permission} for'
+                f'{source_image_name} in {self.region}: {error}.'
             )
             raise AliyunImageException(
-                f'Failed to publish image: {error}.'
+                f'Failed to set launch permission: {error}.'
             )
 
-        self.log.info(f'{source_image_name} published in {self.region}')
+        self.log.info(f'{source_image_name} updated in {self.region}')
 
-    def publish_image_to_regions(
+    def set_launch_permission_in_regions(
         self,
         source_image_name,
         launch_permission,
@@ -528,7 +528,10 @@ class AliyunImage(object):
             self.region = region
 
             try:
-                self.publish_image(source_image_name, launch_permission)
+                self.set_launch_permission(
+                    source_image_name,
+                    launch_permission
+                )
             except Exception:
                 pass
 

@@ -156,6 +156,23 @@ def test_cli_publish_image(mock_img_class):
 
 
 @patch('aliyun_img_utils.aliyun_cli.AliyunImage')
+def test_cli_unpublish_image(mock_img_class):
+    image_class = MagicMock()
+    mock_img_class.return_value = image_class
+
+    args = [
+        'image', 'unpublish', '--image-name', 'test-image',
+        '--launch-permission', 'FAKE', '--regions',
+        'cn-beijing,cn-shanghai'
+    ]
+
+    runner = CliRunner()
+    result = runner.invoke(main, args)
+    assert result.exit_code == 0
+    assert 'Image unpublished' in result.output
+
+
+@patch('aliyun_img_utils.aliyun_cli.AliyunImage')
 def test_cli_deprecate_image(mock_img_class):
     image_class = MagicMock()
     mock_img_class.return_value = image_class

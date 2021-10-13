@@ -498,7 +498,7 @@ def publish(context, image_name, launch_permission, regions, **kwargs):
             regions = regions.split(',')
             keyword_args['regions'] = regions
 
-        aliyun_image.publish_image_to_regions(
+        aliyun_image.set_launch_permission_in_regions(
             image_name,
             launch_permission,
             **keyword_args
@@ -507,6 +507,68 @@ def publish(context, image_name, launch_permission, regions, **kwargs):
     if config_data.log_level != logging.ERROR:
         echo_style(
             f'Image published: {image_name}',
+            config_data.no_color
+        )
+
+
+@click.command()
+@click.option(
+    '--image-name',
+    type=click.STRING,
+    help='Name of the image to be unpublished.',
+    required=True
+)
+@click.option(
+    '--launch-permission',
+    type=click.STRING,
+    help='The launch permission to set for the unpublished image.',
+    required=True
+)
+@click.option(
+    '--regions',
+    help='A comma separated list of region ids to '
+         'publish the provided image in. If no regions '
+         'are provided the image will be published in all '
+         'available regions.'
+)
+@add_options(shared_options)
+@click.pass_context
+def unpublish(context, image_name, launch_permission, regions, **kwargs):
+    """
+    Unpublish a compute image in a set of regions.
+
+    If no regions are provided the image is published to all
+    available regions.
+    """
+    process_shared_options(context.obj, kwargs)
+    config_data = get_config(context.obj)
+    logger = get_logger(config_data.log_level)
+
+    with handle_errors(config_data.log_level, config_data.no_color):
+        aliyun_image = AliyunImage(
+            config_data.access_key,
+            config_data.access_secret,
+            config_data.region,
+            config_data.bucket_name,
+            log_level=config_data.log_level,
+            log_callback=logger
+        )
+
+        keyword_args = {}
+
+        if regions:
+            regions = regions.split(',')
+            keyword_args['regions'] = regions
+
+        aliyun_image.set_launch_permission_in_regions(
+            image_name,
+            launch_permission,
+            **keyword_args
+        )
+
+    if config_data.log_level != logging.ERROR:
+        echo_style(
+            f'Image unpublished: {image_name}',
             config_data.no_color
         )
 
@@ -697,6 +759,7 @@ image.add_command(create)
 image.add_command(delete)
 image.add_command(deprecate)
 image.add_command(publish)
+image.add_command(unpublish)
 image.add_command(replicate)
 image.add_command(upload)
 image.add_command(info)

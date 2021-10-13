@@ -298,10 +298,10 @@ class TestAliyunImage(object):
         client.do_action_with_exception.side_effect = Exception
         self.image.replicate_image('test-image')
 
-    @patch.object(AliyunImage, 'publish_image')
+    @patch.object(AliyunImage, 'set_launch_permission')
     @patch.object(AliyunImage, 'get_regions')
     @patch.object(AliyunImage, 'get_compute_image')
-    def test_publish_image_to_regions(
+    def test_set_launch_permission_in_regions(
         self,
         mock_get_image,
         mock_get_regions,
@@ -316,10 +316,10 @@ class TestAliyunImage(object):
         client.do_action_with_exception.return_value = response
         self.image._compute_client = client
 
-        self.image.publish_image_to_regions('test-image', 'VISIBLE')
+        self.image.set_launch_permission_in_regions('test-image', 'VISIBLE')
 
     @patch.object(AliyunImage, 'get_compute_image')
-    def test_publish_image(self, mock_get_image):
+    def test_set_launch_permission(self, mock_get_image):
         image = {'ImageId': 'm-123'}
         response = json.dumps(image)
         mock_get_image.return_value = image
@@ -328,12 +328,12 @@ class TestAliyunImage(object):
         client.do_action_with_exception.return_value = response
         self.image._compute_client = client
 
-        self.image.publish_image('test-image', 'VISIBLE')
+        self.image.set_launch_permission('test-image', 'VISIBLE')
 
         # Publish failure
         client.do_action_with_exception.side_effect = Exception
         with raises(AliyunImageException):
-            self.image.publish_image('test-image', 'VISIBLE')
+            self.image.set_launch_permission('test-image', 'VISIBLE')
 
     @patch.object(AliyunImage, 'deprecate_image')
     @patch.object(AliyunImage, 'get_regions')
