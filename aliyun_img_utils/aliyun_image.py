@@ -452,14 +452,14 @@ class AliyunImage(object):
             )
         except Exception as error:
             self.log.error(
-                f'Failed to copy {source_image_name} to {self.region}: '
+                f'Failed to copy {source_image_name} to {destination_region}: '
                 f'{error}.'
             )
             raise AliyunImageException(
                 f'Failed to copy image: {error}.'
             )
 
-        self.log.info(f'{response["ImageId"]} created in {self.region}')
+        self.log.info(f'{response["ImageId"]} created in {destination_region}')
 
         return response['ImageId']
 
