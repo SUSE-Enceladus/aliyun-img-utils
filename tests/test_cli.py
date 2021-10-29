@@ -145,7 +145,7 @@ def test_cli_publish_image(mock_img_class):
 
     args = [
         'image', 'publish', '--image-name', 'test-image',
-        '--launch-permission', 'HIDDEN', '--regions',
+        '--launch-permission', 'FAKE', '--regions',
         'cn-beijing,cn-shanghai'
     ]
 
