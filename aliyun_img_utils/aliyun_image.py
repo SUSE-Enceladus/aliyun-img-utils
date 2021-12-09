@@ -324,7 +324,7 @@ class AliyunImage(object):
 
         try:
             image = response['Images']['Image'][0]
-        except IndexError:
+        except (KeyError, IndexError):
             raise AliyunImageException(
                 'Unable to find image.'
             )
