@@ -1,3 +1,9 @@
+v1.7.0 (2021-12-10)
+===================
+
+- Log the correct region name when copying image
+- Handle KeyError when getting image info
+
 v1.6.0 (2021-10-12)
 ===================
 
