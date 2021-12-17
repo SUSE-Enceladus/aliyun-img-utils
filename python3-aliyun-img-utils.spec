@@ -27,6 +27,7 @@ License:        GPL-3.0-or-later
 Group:          Development/Languages/Python
 URL:            https://github.com/SUSE-Enceladus/aliyun-img-utils
 Source:         https://files.pythonhosted.org/packages/source/a/aliyun-img-utils/aliyun-img-utils-%{version}.tar.gz
+BuildRequires:  python-rpm-macros
 BuildRequires:  %{python_module PyYAML}
 BuildRequires:  %{python_module click}
 BuildRequires:  %{python_module click-man}
