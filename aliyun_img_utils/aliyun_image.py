@@ -719,7 +719,8 @@ class AliyunImage(object):
                 self._compute_client = AcsClient(
                     self.access_key,
                     self.access_secret,
-                    self.region
+                    self.region,
+                    connect_timeout=self.timeout
                 )
             except Exception as error:
                 raise AliyunException(
