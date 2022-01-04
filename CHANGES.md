@@ -1,3 +1,8 @@
+v1.8.0 (2022-01-04)
+===================
+
+- Bump the connection timeout for compute client to 180 seconds.
+
 v1.7.1 (2021-12-17)
 ===================
 
