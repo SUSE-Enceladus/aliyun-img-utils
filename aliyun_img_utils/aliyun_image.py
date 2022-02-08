@@ -72,6 +72,23 @@ class AliyunImage(object):
     """
     Provides methods for handling compute images in Alibaba (Aliyun).
     """
+    IMAGE_STATE_MAP = {
+        'Available': 'available',
+        'UnAvailable': 'broken',
+        'Creating': 'processing',
+        'Waiting': 'processing',
+        'CreateFailed': 'broken',
+        'Deprecated': 'deprecated'
+    }
+    IMAGE_STATES = IMAGE_STATE_MAP.keys()
+    IMAGE_BROKEN_STATES = [
+        state for state, category in
+        IMAGE_STATE_MAP.items() if category == 'broken'
+    ]
+    IMAGE_PROCESSING_STATES = [
+        state for state, category in
+        IMAGE_STATE_MAP.items() if category == 'processing'
+    ]
 
     def __init__(
         self,
@@ -287,7 +304,7 @@ class AliyunImage(object):
         self,
         image_name=None,
         image_id=None,
-        is_deprecated=False
+        status=None
     ):
         """
         Return compute image by name and/or id.
@@ -301,7 +318,11 @@ class AliyunImage(object):
                 'Image name and/or image ID is required to get image.'
             )
 
+        if not status:
+            status = ','.join(self.IMAGE_STATES)
+
         request = DescribeImagesRequest()
+        request.set_Status(status)
         request.set_accept_format('json')
 
         if image_name:
@@ -309,9 +330,6 @@ class AliyunImage(object):
 
         if image_id:
             request.set_ImageId(image_id)
-
-        if is_deprecated:
-            request.set_Status('Deprecated')
 
         try:
             response = json.loads(
@@ -361,25 +379,43 @@ class AliyunImage(object):
             'Image not deleted within 5 minutes.'
         )
 
-    def wait_on_compute_image(self, image_id):
+    def wait_on_compute_image(self, image_id, timeout=1500):
         """
         Wait for the compute image to show up in region.
 
-        If it doesn't show up in 10 mintues raise exception.
+        If it doesn't show up in 30 mintues raise exception.
         """
         start = time.time()
-        end = start + 600
+        end = start + timeout
 
         while time.time() < end:
             try:
-                self.get_compute_image(image_id=image_id)
+                image = self.get_compute_image(image_id=image_id)
             except AliyunImageException:
-                time.sleep(10)
-            else:
+                time.sleep(30)
+
+            status = image.get('Status', 'unknown')
+
+            if status in self.IMAGE_BROKEN_STATES:
+                raise AliyunImageException(
+                    f'Image in a broken state: {status}'
+                )
+            elif status in self.IMAGE_PROCESSING_STATES:
+                time.sleep(30)
+            elif status == 'Available':
                 return
+            elif status == 'Deprecated':
+                raise AliyunImageException(
+                    'Image status is "Deprecated" and '
+                    'expected to be "Available"'
+                )
+            else:
+                raise AliyunImageException(
+                    f'Image in an unknown state: {status}'
+                )
 
         raise AliyunImageException(
-            'Image not available within 10 minutes.'
+            'Image not available within 30 minutes.'
         )
 
     def create_compute_image(
@@ -603,7 +639,7 @@ class AliyunImage(object):
         """
         image = self.get_compute_image(
             image_name=source_image_name,
-            is_deprecated=True
+            status='Deprecated'
         )
 
         request = ModifyImageAttributeRequest()
