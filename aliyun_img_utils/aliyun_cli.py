@@ -652,19 +652,18 @@ def activate(context, image_name, regions, **kwargs):
     help='ID of the image.'
 )
 @click.option(
-    '--deprecated',
-    is_flag=True,
-    help='If set the search is filtered on images '
-         'in deprecated state.'
+    '--status',
+    type=click.Choice(AliyunImage.IMAGE_STATES),
+    help='The state of the image. By default the query '
+         'will include all states.'
 )
 @add_options(shared_options)
 @click.pass_context
-def info(context, image_name, image_id, deprecated, **kwargs):
+def info(context, image_name, image_id, status, **kwargs):
     """
     Get a dictionary of image data for an image based on ID or name.
 
-    If `--deprecated` all images in deprecated state are searched
-    otherwise all images in active state are searched.
+    The default status is all states.
     """
     process_shared_options(context.obj, kwargs)
     config_data = get_config(context.obj)
@@ -683,7 +682,7 @@ def info(context, image_name, image_id, deprecated, **kwargs):
         image_data = aliyun_image.get_compute_image(
             image_name=image_name,
             image_id=image_id,
-            is_deprecated=deprecated
+            status=status
         )
 
     echo_style(

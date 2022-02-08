@@ -221,7 +221,7 @@ class TestAliyunImage(object):
 
     @patch.object(AliyunImage, 'get_compute_image')
     def test_create_compute_image(self, mock_get_image):
-        image = {'ImageId': 'm-123'}
+        image = {'ImageId': 'm-123', 'Status': 'Available'}
         response = json.dumps(image)
         mock_get_image.return_value = image
 
@@ -417,3 +417,31 @@ class TestAliyunImage(object):
         client.do_action_with_exception.side_effect = Exception
         with raises(AliyunImageException):
             self.image.add_image_tags('m-123', tags)
+
+    @patch.object(AliyunImage, 'get_compute_image')
+    def test_wait_on_compute_image(self, mock_get_image):
+        image = {'ImageId': 'm-123', 'Status': 'UnAvailable'}
+        mock_get_image.return_value = image
+
+        # Broken state
+        with raises(AliyunImageException):
+            self.image.wait_on_compute_image('m-123')
+
+        image = {'ImageId': 'm-123', 'Status': 'Deprecated'}
+        mock_get_image.return_value = image
+
+        # Deprecated state
+        with raises(AliyunImageException):
+            self.image.wait_on_compute_image('m-123')
+
+        mock_get_image.return_value = {}
+
+        # Unknown state
+        with raises(AliyunImageException):
+            self.image.wait_on_compute_image('m-123')
+
+        image = {'ImageId': 'm-123', 'Status': 'Available'}
+        mock_get_image.return_value = image
+
+        # Available state
+        self.image.wait_on_compute_image('m-123')
