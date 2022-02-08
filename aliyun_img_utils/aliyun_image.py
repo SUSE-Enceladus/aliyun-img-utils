@@ -281,6 +281,7 @@ class AliyunImage(object):
     def delete_compute_image_in_regions(
         self,
         image_name,
+        delete_blob=False,
         force=False,
         regions=None
     ):
@@ -296,7 +297,11 @@ class AliyunImage(object):
             self.region = region
 
             try:
-                self.delete_compute_image(image_name, force=force)
+                self.delete_compute_image(
+                    image_name,
+                    delete_blob=delete_blob,
+                    force=force
+                )
             except Exception:
                 pass
 
