@@ -20,7 +20,7 @@
 %define skip_python2 1
 %endif
 Name:           python-aliyun-img-utils
-Version:        1.8.0
+Version:        2.0.0
 Release:        0
 Summary:        Command line utility for handling images in the Aliyun Cloud
 License:        GPL-3.0-or-later
