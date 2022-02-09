@@ -1,3 +1,16 @@
+v2.0.0 (2022-02-09)
+===================
+
+- Fix delete image bug
+- Handle image state flow when waiting for image to be available
+- Add a longer wait timeout and make it configurable
+- Add available states to the image class
+- Search on all states by default when retrieving compute image
+
+Breaking changes
+
+- `--status` replaces `--deprecated` in the image info endpoint
+
 v1.8.0 (2022-01-04)
 ===================
 
