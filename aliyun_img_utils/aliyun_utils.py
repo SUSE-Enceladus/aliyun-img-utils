@@ -34,6 +34,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.acs_exception.exceptions import ClientException
 from aliyunsdkecs.request.v20140526.ImportKeyPairRequest import (
     ImportKeyPairRequest
 )
@@ -319,3 +320,18 @@ def get_future_date(months=6, date_format='%Y%m%d'):
     today = date.today()
     future_date = today + relativedelta(months=int(months))
     return future_date.strftime(date_format)
+
+
+@contextmanager
+def handle_http_errors():
+    """
+    Context manager to handle SDK.HttpError exceptions.
+    """
+    try:
+        yield
+    except ClientException as error:
+        if error.error_code == 'SDK.HttpError':
+            # Prevent client ID and signatures from ending up in logs
+            raise AliyunException(
+                'HTTPError: Failed to establish connection'
+            )

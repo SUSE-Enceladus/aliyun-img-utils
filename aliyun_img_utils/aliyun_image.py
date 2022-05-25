@@ -64,7 +64,8 @@ from aliyun_img_utils.aliyun_utils import (
     get_storage_bucket_client,
     put_blob,
     get_todays_date,
-    get_future_date
+    get_future_date,
+    handle_http_errors
 )
 
 
@@ -252,14 +253,11 @@ class AliyunImage(object):
             request.set_Force(force)
 
         try:
-            self.compute_client.do_action_with_exception(request)
+            with handle_http_errors():
+                self.compute_client.do_action_with_exception(request)
         except Exception as error:
-            self.log.error(
-                f'Unable to delete {image_name} in {self.region}: '
-                f'{error}.'
-            )
             raise AliyunImageException(
-                f'Unable to delete image in {self.region}: {error}.'
+                f'Unable to delete image: {error}.'
             )
 
         self.wait_on_compute_image_delete(image['ImageId'])
@@ -302,8 +300,11 @@ class AliyunImage(object):
                     delete_blob=delete_blob,
                     force=force
                 )
-            except Exception:
-                pass
+            except Exception as error:
+                self.log.error(
+                    f'Failed to delete {image_name} in {self.region}: '
+                    f'{error}.'
+                )
 
     def get_compute_image(
         self,
@@ -337,9 +338,10 @@ class AliyunImage(object):
             request.set_ImageId(image_id)
 
         try:
-            response = json.loads(
-                self.compute_client.do_action_with_exception(request)
-            )
+            with handle_http_errors():
+                response = json.loads(
+                    self.compute_client.do_action_with_exception(request)
+                )
         except Exception as error:
             raise AliyunImageException(
                 f'Unable to find image: {error}.'
@@ -488,16 +490,13 @@ class AliyunImage(object):
         request.set_DestinationRegionId(destination_region)
 
         try:
-            response = json.loads(
-                self.compute_client.do_action_with_exception(request)
-            )
+            with handle_http_errors():
+                response = json.loads(
+                    self.compute_client.do_action_with_exception(request)
+                )
         except Exception as error:
-            self.log.error(
-                f'Failed to copy {source_image_name} to {destination_region}: '
-                f'{error}.'
-            )
             raise AliyunImageException(
-                f'Failed to copy image: {error}.'
+                f'Unable to copy image: {error}.'
             )
 
         self.log.info(f'{response["ImageId"]} created in {destination_region}')
@@ -522,7 +521,11 @@ class AliyunImage(object):
             try:
                 image_id = self.copy_compute_image(source_image_name, region)
                 images[region] = image_id
-            except Exception:
+            except Exception as error:
+                self.log.error(
+                    f'Failed to copy {source_image_name} '
+                    f'to {region}: {error}'
+                )
                 images[region] = None
 
         return images
@@ -539,14 +542,11 @@ class AliyunImage(object):
         request.set_LaunchPermission(launch_permission)
 
         try:
-            self.compute_client.do_action_with_exception(request)
+            with handle_http_errors():
+                self.compute_client.do_action_with_exception(request)
         except Exception as error:
-            self.log.error(
-                f'Failed to publish {source_image_name} in {self.region}: '
-                f'{error}.'
-            )
             raise AliyunImageException(
-                f'Failed to publish image: {error}.'
+                f'Unable to publish image: {error}.'
             )
 
         self.log.info(f'{source_image_name} published in {self.region}')
@@ -570,8 +570,11 @@ class AliyunImage(object):
 
             try:
                 self.publish_image(source_image_name, launch_permission)
-            except Exception:
-                pass
+            except Exception as error:
+                self.log.error(
+                    f'Failed to publish {source_image_name} '
+                    f'in {self.region}: {error}'
+                )
 
     def generate_deprecation_tags(self, replacement_image=None):
         """
@@ -607,7 +610,6 @@ class AliyunImage(object):
         """
         image = self.get_compute_image(image_name=source_image_name)
         tags = self.generate_deprecation_tags(replacement_image)
-
         self.add_image_tags(image['ImageId'], tags)
         self.log.info(f'{source_image_name} deprecated in {self.region}')
 
@@ -633,8 +635,11 @@ class AliyunImage(object):
                     source_image_name,
                     replacement_image
                 )
-            except Exception:
-                pass
+            except Exception as error:
+                self.log.error(
+                    f'Failed to deprecate {source_image_name} '
+                    f'in {self.region}: {error}'
+                )
 
     def activate_image(self, source_image_name):
         """
@@ -653,14 +658,11 @@ class AliyunImage(object):
         request.set_Status('Available')
 
         try:
-            self.compute_client.do_action_with_exception(request)
+            with handle_http_errors():
+                self.compute_client.do_action_with_exception(request)
         except Exception as error:
-            self.log.error(
-                f'Failed to activate {source_image_name} in {self.region}: '
-                f'{error}.'
-            )
             raise AliyunImageException(
-                f'Failed to activate image: {error}.'
+                f'Unable to activate image: {error}.'
             )
 
         self.log.info(f'{source_image_name} activated in {self.region}')
@@ -679,8 +681,11 @@ class AliyunImage(object):
 
             try:
                 self.activate_image(source_image_name)
-            except Exception:
-                pass
+            except Exception as error:
+                self.log.error(
+                    f'Failed to activate {source_image_name} in '
+                    f'{self.region}: {error}.'
+                )
 
     def add_image_tags(self, image_id, tags):
         """
@@ -693,14 +698,11 @@ class AliyunImage(object):
         request.set_Tags(tags)
 
         try:
-            self.compute_client.do_action_with_exception(request)
+            with handle_http_errors():
+                self.compute_client.do_action_with_exception(request)
         except Exception as error:
-            self.log.error(
-                f'Failed to add tags to image {image_id} '
-                f'in {self.region}: {error}.'
-            )
             raise AliyunImageException(
-                f'Failed to add tags to image: {error}.'
+                f'Unable to add tags to image: {error}.'
             )
 
         self.log.info(f'Tags added to {image_id} in {self.region}')
