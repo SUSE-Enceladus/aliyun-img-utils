@@ -386,7 +386,7 @@ class AliyunImage(object):
             'Image not deleted within 5 minutes.'
         )
 
-    def wait_on_compute_image(self, image_id, timeout=1500):
+    def wait_on_compute_image(self, image_id, timeout=3600):
         """
         Wait for the compute image to show up in region.
 
@@ -422,7 +422,7 @@ class AliyunImage(object):
                 )
 
         raise AliyunImageException(
-            'Image not available within 30 minutes.'
+            f'Image not available within {timeout} seconds.'
         )
 
     def create_compute_image(
@@ -434,7 +434,8 @@ class AliyunImage(object):
         os_type='linux',
         arch='x86_64',
         disk_image_size=20,
-        force_replace_image=False
+        force_replace_image=False,
+        timeout=3600
     ):
         """
         Create compute image in current region from storage blob.
@@ -472,7 +473,7 @@ class AliyunImage(object):
             )
 
         # Image creation is async so wait until image shows up
-        self.wait_on_compute_image(response['ImageId'])
+        self.wait_on_compute_image(response['ImageId'], timeout=timeout)
 
         return response['ImageId']
 
