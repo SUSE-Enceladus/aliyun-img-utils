@@ -344,11 +344,6 @@ def create(
     required=True
 )
 @click.option(
-    '--delete-blob',
-    is_flag=True,
-    help='Also delete the image blob from storage bucket.'
-)
-@click.option(
     '--force',
     is_flag=True,
     help='Forcibly deletes the custom image, regardless of '
@@ -363,7 +358,7 @@ def create(
 )
 @add_options(shared_options)
 @click.pass_context
-def delete(context, image_name, delete_blob, force, regions, **kwargs):
+def delete(context, image_name, force, regions, **kwargs):
     """Delete a compute image and optionally the backing qcow2 blob."""
     process_shared_options(context.obj, kwargs)
     config_data = get_config(context.obj)
@@ -380,7 +375,6 @@ def delete(context, image_name, delete_blob, force, regions, **kwargs):
         )
 
         keyword_args = {
-            'delete_blob': delete_blob,
             'force': force
         }
 

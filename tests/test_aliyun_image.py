@@ -167,9 +167,8 @@ class TestAliyunImage(object):
                 force_replace_image=True
             )
 
-    @patch.object(AliyunImage, 'delete_storage_blob')
     @patch.object(AliyunImage, 'get_compute_image')
-    def test_delete_compute_image(self, mock_get_image, mock_delete_tarball):
+    def test_delete_compute_image(self, mock_get_image):
         image = {
             'ImageId': 'm-123',
             'DiskDeviceMappings': {
@@ -187,14 +186,12 @@ class TestAliyunImage(object):
 
         assert self.image.delete_compute_image(
             'test-image',
-            delete_blob=True,
             force=True
         )
 
         # Image not exists
         assert self.image.delete_compute_image(
             'test-image',
-            delete_blob=True
         ) is False
 
     @patch.object(AliyunImage, 'delete_compute_image')

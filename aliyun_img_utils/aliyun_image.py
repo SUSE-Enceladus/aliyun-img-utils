@@ -232,13 +232,11 @@ class AliyunImage(object):
     def delete_compute_image(
         self,
         image_name,
-        delete_blob=False,
         force=False
     ):
         """
-        Delete compute image in current region.
-
-        If delete_blob is True delete the backing storage blob.
+        Delete compute image in current region. This automatically deletes
+        the backing storage object.
         """
         try:
             image = self.get_compute_image(image_name=image_name)
@@ -263,23 +261,11 @@ class AliyunImage(object):
         self.wait_on_compute_image_delete(image['ImageId'])
         self.log.info(f'{image["ImageId"]} deleted in {self.region}')
 
-        if delete_blob:
-            oss_object = None
-            try:
-                device = image['DiskDeviceMappings']['DiskDeviceMapping'][0]
-                oss_object = device['ImportOSSObject']
-            except (IndexError, KeyError):
-                pass
-
-            if oss_object:
-                self.delete_storage_blob(oss_object)
-
         return True
 
     def delete_compute_image_in_regions(
         self,
         image_name,
-        delete_blob=False,
         force=False,
         regions=None
     ):
@@ -297,7 +283,6 @@ class AliyunImage(object):
             try:
                 self.delete_compute_image(
                     image_name,
-                    delete_blob=delete_blob,
                     force=force
                 )
             except Exception as error:
