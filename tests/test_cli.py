@@ -185,3 +185,20 @@ def test_cli_activate_image(mock_img_class):
     result = runner.invoke(main, args)
     assert result.exit_code == 0
     assert 'Image activated' in result.output
+
+
+@patch('aliyun_img_utils.aliyun_cli.AliyunImage')
+def test_cli_share_permission(mock_img_class):
+    image_class = MagicMock()
+    image_class.describe_share_permission.return_value = (
+        '{"share_groups": [], "accounts": {"account": []}}'
+    )
+    mock_img_class.return_value = image_class
+
+    args = [
+        'image', 'share-permission', '--image-name', 'test-image'
+    ]
+
+    runner = CliRunner()
+    result = runner.invoke(main, args)
+    assert result.exit_code == 0

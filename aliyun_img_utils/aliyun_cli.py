@@ -685,6 +685,46 @@ def info(context, image_name, image_id, status, **kwargs):
     )
 
 
+@click.command()
+@click.option(
+    '--image-name',
+    type=click.STRING,
+    help='Name of the image to get share permission.',
+    required=True
+)
+@add_options(shared_options)
+@click.pass_context
+def share_permission(context, image_name, **kwargs):
+    """
+    Describe compute image share permission in the current region.
+    """
+    process_shared_options(context.obj, kwargs)
+    config_data = get_config(context.obj)
+    logger = get_logger(config_data.log_level)
+
+    with handle_errors(config_data.log_level, config_data.no_color):
+        aliyun_image = AliyunImage(
+            config_data.access_key,
+            config_data.access_secret,
+            config_data.region,
+            config_data.bucket_name,
+            log_level=config_data.log_level,
+            log_callback=logger
+        )
+
+        keyword_args = {}
+
+        response = aliyun_image.describe_share_permission(
+            image_name,
+            **keyword_args
+        )
+
+    echo_style(
+        json.dumps(response, indent=2),
+        config_data.no_color
+    )
+
+
 image.add_command(activate)
 image.add_command(create)
 image.add_command(delete)
@@ -693,4 +733,5 @@ image.add_command(publish)
 image.add_command(replicate)
 image.add_command(upload)
 image.add_command(info)
+image.add_command(share_permission)
 main.add_command(image)
