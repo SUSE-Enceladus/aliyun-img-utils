@@ -43,6 +43,9 @@ from aliyunsdkecs.request.v20140526.DescribeRegionsRequest import (
 from aliyunsdkecs.request.v20140526.CopyImageRequest import (
     CopyImageRequest
 )
+from aliyunsdkecs.request.v20140526.DescribeImageSharePermissionRequest import (  # noqa
+    DescribeImageSharePermissionRequest
+)
 from aliyunsdkecs.request.v20140526.ModifyImageSharePermissionRequest import (
     ModifyImageSharePermissionRequest
 )
@@ -515,6 +518,28 @@ class AliyunImage(object):
                 images[region] = None
 
         return images
+
+    def describe_share_permission(self, source_image_name):
+        """
+        Describe the images share permissions in current region.
+        """
+        image = self.get_compute_image(image_name=source_image_name)
+
+        request = DescribeImageSharePermissionRequest()
+        request.set_accept_format('json')
+        request.set_ImageId(image['ImageId'])
+
+        try:
+            with handle_http_errors():
+                response = json.loads(
+                    self.compute_client.do_action_with_exception(request)
+                )
+        except Exception as error:
+            raise AliyunImageException(
+                f'Unable to describe share permission for image: {error}.'
+            )
+
+        return response
 
     def publish_image(self, source_image_name, launch_permission):
         """

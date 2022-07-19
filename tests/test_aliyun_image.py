@@ -442,3 +442,20 @@ class TestAliyunImage(object):
 
         # Available state
         self.image.wait_on_compute_image('m-123')
+
+    @patch.object(AliyunImage, 'get_compute_image')
+    def test_get_share_permission(self, mock_get_image):
+        image = {'ImageId': 'm-123', 'Status': 'Available'}
+        mock_get_image.return_value = image
+
+        client = Mock()
+        self.image._compute_client = client
+
+        client.do_action_with_exception.return_value = (
+            '{"share_groups": [], "accounts": {"account": []}}'
+        )
+        self.image.describe_share_permission('m-123')
+
+        client.do_action_with_exception.side_effect = Exception
+        with raises(AliyunImageException):
+            self.image.describe_share_permission('m-123')
