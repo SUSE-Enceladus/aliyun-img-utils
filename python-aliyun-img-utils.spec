@@ -86,6 +86,7 @@ done
 %python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-publish.1
 %python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-replicate.1
 %python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-upload.1
+%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-share-permission.1
 %python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image.1
 %python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils.1
 %{python_expand %fdupes %{buildroot}%{$python_sitelib}}
@@ -113,6 +114,7 @@ done
 %python_alternative %{_mandir}/man1/aliyun-img-utils-image-publish.1
 %python_alternative %{_mandir}/man1/aliyun-img-utils-image-replicate.1
 %python_alternative %{_mandir}/man1/aliyun-img-utils-image-upload.1
+%python_alternative %{_mandir}/man1/aliyun-img-utils-image-share-permission.1
 %python_alternative %{_mandir}/man1/aliyun-img-utils-image.1
 %python_alternative %{_mandir}/man1/aliyun-img-utils.1
 %python_alternative %{_bindir}/aliyun-img-utils
