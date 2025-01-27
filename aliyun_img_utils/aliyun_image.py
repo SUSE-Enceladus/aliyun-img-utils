@@ -384,6 +384,7 @@ class AliyunImage(object):
         end = start + timeout
 
         while time.time() < end:
+            image = {}
             try:
                 image = self.get_compute_image(image_id=image_id)
             except AliyunImageException:
