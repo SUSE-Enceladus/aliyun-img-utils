@@ -40,7 +40,7 @@ from aliyun_img_utils.aliyun_exceptions import (
 class TestAliyunImage(object):
     """Test Aliyun Image class."""
 
-    def setup(self):
+    def setup_method(self):
         self.image = AliyunImage(
             '12345',
             '54321',
