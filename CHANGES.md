@@ -1,3 +1,12 @@
+v2.2.0 (2024-05-28)
+===================
+
+- Increase the timeout for wait on image method
+- Remove superfluous delete blob option
+- Add endpoint for retrieving image share permission
+- Update python versions for ci testing
+- Migrate spec file to build for python 3.11
+
 v2.1.0 (2022-05-25)
 ===================
 

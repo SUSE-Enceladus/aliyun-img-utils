@@ -38,7 +38,7 @@ with open('requirements-dev.txt') as req_file:
 
 setup(
     name='aliyun-img-utils',
-    version='2.1.0',
+    version='2.2.0',
     description='Package that provides utilities for '
                 'handling images in Aliyun Cloud.',
     long_description=readme,
@@ -56,7 +56,7 @@ setup(
         ]
     },
     include_package_data=True,
-    python_requires='>=3.5',
+    python_requires='>=3.8',
     install_requires=requirements,
     extras_require={
         'dev': dev_requirements,
@@ -74,9 +74,10 @@ setup(
         'GNU General Public License v3 or later (GPLv3+)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
 )
