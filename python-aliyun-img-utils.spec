@@ -72,7 +72,7 @@ mkdir -p man/man1
 %pyproject_install
 install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
-%python_expand %fdupes %{buildroot}%{_sitelibdir}
+%fdupes %{buildroot}%{_sitelibdir}
 
 %check
 %pytest
