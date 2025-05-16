@@ -1,3 +1,9 @@
+v2.3.0 (2025-05-16)
+===================
+
+- Update spec to build for one version of python
+- Add new man page to spec
+
 v2.2.0 (2024-05-28)
 ===================
 
