@@ -15,8 +15,13 @@
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
-%define python python
+%define upstream_name aliyun-img-utils
+%if 0%{?suse_version} >= 1600
+%define pythons %{primary_python}
+%else
 %{?sle15_python_module_pythons}
+%endif
+%global _sitelibdir %{%{pythons}_sitelib}
 
 Name:           python-aliyun-img-utils
 Version:        2.2.0
@@ -28,37 +33,28 @@ URL:            https://github.com/SUSE-Enceladus/aliyun-img-utils
 Source:         https://files.pythonhosted.org/packages/source/a/aliyun-img-utils/aliyun-img-utils-%{version}.tar.gz
 BuildRequires:  python-rpm-macros
 BuildRequires:  fdupes
-BuildRequires:  %{python_module PyYAML}
-BuildRequires:  %{python_module click}
-BuildRequires:  %{python_module click-man}
-BuildRequires:  %{python_module oss2}
-BuildRequires:  %{python_module aliyun-python-sdk-core}
-BuildRequires:  %{python_module aliyun-python-sdk-ecs}
-BuildRequires:  %{python_module python-dateutil}
-BuildRequires:  %{python_module pytest}
-BuildRequires:  %{python_module coverage}
-BuildRequires:  %{python_module pytest-cov}
-BuildRequires:  %{python_module pip}
-BuildRequires:  %{python_module setuptools}
-BuildRequires:  %{python_module wheel}
-Requires:       python-PyYAML
-Requires:       python-click
-Requires:       python-oss2
-Requires:       python-aliyun-python-sdk-core
-Requires:       python-aliyun-python-sdk-ecs
-Requires:       python-python-dateutil
-
-%if %{with libalternatives}
-BuildRequires:  alts
-Requires:       alts
-%else
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%endif
+BuildRequires:  %{pythons}-PyYAML
+BuildRequires:  %{pythons}-click
+BuildRequires:  %{pythons}-click-man
+BuildRequires:  %{pythons}-oss2
+BuildRequires:  %{pythons}-aliyun-python-sdk-core
+BuildRequires:  %{pythons}-aliyun-python-sdk-ecs
+BuildRequires:  %{pythons}-python-dateutil
+BuildRequires:  %{pythons}-pytest
+BuildRequires:  %{pythons}-coverage
+BuildRequires:  %{pythons}-pytest-cov
+BuildRequires:  %{pythons}-pip
+BuildRequires:  %{pythons}-setuptools
+BuildRequires:  %{pythons}-wheel
+Requires:       %{pythons}-PyYAML
+Requires:       %{pythons}-click
+Requires:       %{pythons}-oss2
+Requires:       %{pythons}-aliyun-python-sdk-core
+Requires:       %{pythons}-aliyun-python-sdk-ecs
+Requires:       %{pythons}-python-dateutil
 
 Provides:       python3-aliyun-img-utils = %{version}
 Obsoletes:      python3-aliyun-img-utils < %{version}
-%python_subpackages
 
 %description
 aliyun_img_utils provides an api and command line 
@@ -74,51 +70,29 @@ mkdir -p man/man1
 
 %install
 %pyproject_install
-for i in man/man1/*.1 ; do
-    install -p -D -m 644 $i %{buildroot}%{_mandir}/man1/$(basename $i)
-done
-%python_clone -a %{buildroot}%{_bindir}/aliyun-img-utils
-%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-activate.1
-%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-create.1
-%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-delete.1
-%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-deprecate.1
-%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-info.1
-%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-publish.1
-%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-replicate.1
-%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-upload.1
-%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image-share-permission.1
-%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils-image.1
-%python_clone -a %{buildroot}%{_mandir}/man1/aliyun-img-utils.1
-%{python_expand %fdupes %{buildroot}%{$python_sitelib}}
-
-%pre
-%python_libalternatives_reset_alternative aliyun-img-utils
-
-%post
-%{python_install_alternative aliyun-img-utils aliyun-img-utils-image-activate.1 aliyun-img-utils-image-create.1 aliyun-img-utils-image-delete.1 aliyun-img-utils-image-deprecate.1 aliyun-img-utils-image-info.1 aliyun-img-utils-image-publish.1 aliyun-img-utils-image-replicate.1 aliyun-img-utils-image-upload.1 aliyun-img-utils-image.1 aliyun-img-utils.1}
-
-%postun
-%python_uninstall_alternative aliyun-img-utils
+install -d -m 755 %{buildroot}/%{_mandir}/man1
+install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
+%fdupes %{buildroot}%{_sitelibdir}
 
 %check
 %pytest
 
-%files %{python_files}
+%files
 %license LICENSE
 %doc CHANGES.md CONTRIBUTING.md README.md
-%python_alternative %{_mandir}/man1/aliyun-img-utils-image-activate.1
-%python_alternative %{_mandir}/man1/aliyun-img-utils-image-create.1
-%python_alternative %{_mandir}/man1/aliyun-img-utils-image-delete.1
-%python_alternative %{_mandir}/man1/aliyun-img-utils-image-deprecate.1
-%python_alternative %{_mandir}/man1/aliyun-img-utils-image-info.1
-%python_alternative %{_mandir}/man1/aliyun-img-utils-image-publish.1
-%python_alternative %{_mandir}/man1/aliyun-img-utils-image-replicate.1
-%python_alternative %{_mandir}/man1/aliyun-img-utils-image-upload.1
-%python_alternative %{_mandir}/man1/aliyun-img-utils-image-share-permission.1
-%python_alternative %{_mandir}/man1/aliyun-img-utils-image.1
-%python_alternative %{_mandir}/man1/aliyun-img-utils.1
-%python_alternative %{_bindir}/aliyun-img-utils
-%{python_sitelib}/*
+%{_mandir}/man1/aliyun-img-utils-image-activate.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-create.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-delete.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-deprecate.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-info.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-publish.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-replicate.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-upload.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-share-permission.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils.1%{?ext_man}
+%{_bindir}/aliyun-img-utils
+%{_sitelibdir}/aliyun_img_utils/
+%{_sitelibdir}/aliyun_img_utils-*.dist-info/
 
 %changelog
-
