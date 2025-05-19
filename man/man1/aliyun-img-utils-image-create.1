@@ -1,0 +1,59 @@
+.TH "ALIYUN-IMG-UTILS IMAGE CREATE" "1" "2025-05-19" "2.3.0" "aliyun-img-utils image create Manual"
+.SH NAME
+aliyun-img-utils\-image\-create \- Create a compute image from a qcow2 image...
+.SH SYNOPSIS
+.B aliyun-img-utils image create
+[OPTIONS]
+.SH DESCRIPTION
+.PP
+    Create a compute image from a qcow2 image in storage.
+    
+.SH OPTIONS
+.TP
+\fB\-\-image\-name\fP TEXT
+Name of the newly created compute image.  [required]
+.TP
+\fB\-\-image\-description\fP TEXT
+Description for the newly created image.  [required]
+.TP
+\fB\-\-platform\fP TEXT
+The distribution of the image operating system.  [required]
+.TP
+\fB\-\-blob\-name\fP TEXT
+Name for the blob in the storage bucket to use to create the new image.  [required]
+.TP
+\fB\-\-force\-replace\-image\fP
+Delete the compute image prior to creation if it already exists.
+.TP
+\fB\-\-disk\-size\fP INTEGER RANGE
+Size root disk in GB. Default is 20GB.  [x>=5]
+.TP
+\fB\-C,\fP \-\-config\-dir PATH
+Aliyun Image utils config directory to use. Default: ~/.config/aliyun_img_utils/
+.TP
+\fB\-\-profile\fP TEXT
+The configuration profile to use. Expected to match a config file in config directory. Example: production, for ~/.config/aliyun_img_utils/production.yaml. The default value is default: ~/.config/aliyun_img_utils/default.yaml
+.TP
+\fB\-\-no\-color\fP
+Remove ANSI color and styling from output.
+.TP
+\fB\-\-verbose\fP
+Display debug level logging to console.
+.TP
+\fB\-\-info\fP
+Display logging info to console. (Default)
+.TP
+\fB\-\-quiet\fP
+Display only errors to console.
+.TP
+\fB\-\-access\-key\fP TEXT
+Access key used for authentication of requests.
+.TP
+\fB\-\-access\-secret\fP TEXT
+Access secret used for authentication of requests.
+.TP
+\fB\-\-bucket\-name\fP TEXT
+Storage bucket to store uploaded images.
+.TP
+\fB\-\-region\fP TEXT
+The region to use for the image requests.

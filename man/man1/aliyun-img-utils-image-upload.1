@@ -1,0 +1,62 @@
+.TH "ALIYUN-IMG-UTILS IMAGE UPLOAD" "1" "2025-05-19" "2.3.0" "aliyun-img-utils image upload Manual"
+.SH NAME
+aliyun-img-utils\-image\-upload \- Upload a qcow2 image to a storage bucket...
+.SH SYNOPSIS
+.B aliyun-img-utils image upload
+[OPTIONS]
+.SH DESCRIPTION
+.PP
+    Upload a qcow2 image to a storage bucket in the current region.
+    
+.SH OPTIONS
+.TP
+\fB\-\-image\-file\fP PATH
+Path to qcow2 image.  [required]
+.TP
+\fB\-\-page\-size\fP INTEGER RANGE
+Size of page size chunks for image upload. Minimum chunk size is 100KB.  [x>=102400]
+.TP
+\fB\-\-blob\-name\fP TEXT
+Name to use for blob in the storage bucket. By default the filename from image file will be used.
+.TP
+\fB\-\-force\-replace\-image\fP
+Delete the image prior to upload if it already exists.
+.TP
+\fB\-\-timeout\fP INTEGER RANGE
+Session timeout (in minutes) for image upload. Default is 180 minutes.  [x>=1]
+.TP
+\fB\-\-direct\-transfer\fP
+Upload directly to region endpoint with no acceleration.
+.TP
+\fB\-\-accelerated\-transfer\fP
+(Default) Use transfer acceleration for image upload. See docs for more info: https://www.alibabacloud.com/help/doc-detail/131312.htm.
+.TP
+\fB\-C,\fP \-\-config\-dir PATH
+Aliyun Image utils config directory to use. Default: ~/.config/aliyun_img_utils/
+.TP
+\fB\-\-profile\fP TEXT
+The configuration profile to use. Expected to match a config file in config directory. Example: production, for ~/.config/aliyun_img_utils/production.yaml. The default value is default: ~/.config/aliyun_img_utils/default.yaml
+.TP
+\fB\-\-no\-color\fP
+Remove ANSI color and styling from output.
+.TP
+\fB\-\-verbose\fP
+Display debug level logging to console.
+.TP
+\fB\-\-info\fP
+Display logging info to console. (Default)
+.TP
+\fB\-\-quiet\fP
+Display only errors to console.
+.TP
+\fB\-\-access\-key\fP TEXT
+Access key used for authentication of requests.
+.TP
+\fB\-\-access\-secret\fP TEXT
+Access secret used for authentication of requests.
+.TP
+\fB\-\-bucket\-name\fP TEXT
+Storage bucket to store uploaded images.
+.TP
+\fB\-\-region\fP TEXT
+The region to use for the image requests.

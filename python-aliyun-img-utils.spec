@@ -1,7 +1,7 @@
 #
 # spec file for package python-aliyun-img-utils
 #
-# Copyright (c) 2021 SUSE LLC
+# Copyright (c) 2025 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -30,12 +30,11 @@ Summary:        Command line utility for handling images in the Aliyun Cloud
 License:        GPL-3.0-or-later
 Group:          Development/Languages/Python
 URL:            https://github.com/SUSE-Enceladus/aliyun-img-utils
-Source:         https://files.pythonhosted.org/packages/source/a/aliyun-img-utils/aliyun-img-utils-%{version}.tar.gz
+Source:         https://files.pythonhosted.org/packages/source/a/%{upstream_name}/%{upstream_name}-%{version}.tar.gz
 BuildRequires:  python-rpm-macros
 BuildRequires:  fdupes
 BuildRequires:  %{pythons}-PyYAML
 BuildRequires:  %{pythons}-click
-BuildRequires:  %{pythons}-click-man
 BuildRequires:  %{pythons}-oss2
 BuildRequires:  %{pythons}-aliyun-python-sdk-core
 BuildRequires:  %{pythons}-aliyun-python-sdk-ecs
@@ -53,6 +52,7 @@ Requires:       %{pythons}-aliyun-python-sdk-core
 Requires:       %{pythons}-aliyun-python-sdk-ecs
 Requires:       %{pythons}-python-dateutil
 
+BuildArch:      noarch
 Provides:       python3-aliyun-img-utils = %{version}
 Obsoletes:      python3-aliyun-img-utils < %{version}
 
@@ -61,15 +61,14 @@ aliyun_img_utils provides an api and command line
 utilities for handling images in the Aliyun Cloud.
 
 %prep
-%autosetup -n aliyun-img-utils-%{version}
+%autosetup -n %{upstream_name}-%{version}
 
 %build
 %pyproject_wheel
-mkdir -p man/man1
-%python_exec setup.py --command-packages=click_man.commands man_pages --target man/man1
 
 %install
 %pyproject_install
+
 install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
 %fdupes %{buildroot}%{_sitelibdir}
@@ -91,7 +90,7 @@ install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
 %{_mandir}/man1/aliyun-img-utils-image-share-permission.1%{?ext_man}
 %{_mandir}/man1/aliyun-img-utils-image.1%{?ext_man}
 %{_mandir}/man1/aliyun-img-utils.1%{?ext_man}
-%{_bindir}/aliyun-img-utils
+%{_bindir}/%{upstream_name}
 %{_sitelibdir}/aliyun_img_utils/
 %{_sitelibdir}/aliyun_img_utils-*.dist-info/
 
