@@ -69,8 +69,8 @@ utilities for handling images in the Aliyun Cloud.
 %install
 %pyproject_install
 
-install -d -m 755 %{buildroot}/%{_mandir}
-install -m 644 man/* %{buildroot}/%{_mandir}
+install -d -m 755 %{buildroot}/%{_mandir}/man1
+install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
 %fdupes %{buildroot}%{_sitelibdir}
 
 %check
@@ -79,17 +79,17 @@ install -m 644 man/* %{buildroot}/%{_mandir}
 %files
 %license LICENSE
 %doc CHANGES.md CONTRIBUTING.md README.md
-%{_mandir}/aliyun-img-utils-image-activate.1
-%{_mandir}/aliyun-img-utils-image-create.1
-%{_mandir}/aliyun-img-utils-image-delete.1
-%{_mandir}/aliyun-img-utils-image-deprecate.1
-%{_mandir}/aliyun-img-utils-image-info.1
-%{_mandir}/aliyun-img-utils-image-publish.1
-%{_mandir}/aliyun-img-utils-image-replicate.1
-%{_mandir}/aliyun-img-utils-image-upload.1
-%{_mandir}/aliyun-img-utils-image-share-permission.1
-%{_mandir}/aliyun-img-utils-image.1
-%{_mandir}/aliyun-img-utils.1
+%{_mandir}/man1/aliyun-img-utils-image-activate.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-create.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-delete.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-deprecate.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-info.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-publish.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-replicate.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-upload.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image-share-permission.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils-image.1%{?ext_man}
+%{_mandir}/man1/aliyun-img-utils.1%{?ext_man}
 %{_bindir}/%{upstream_name}
 %{_sitelibdir}/aliyun_img_utils/
 %{_sitelibdir}/aliyun_img_utils-*.dist-info/
