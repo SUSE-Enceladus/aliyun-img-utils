@@ -1,0 +1,53 @@
+.TH "ALIYUN-IMG-UTILS IMAGE PUBLISH" "1" "2025-05-19" "2.3.0" "aliyun-img-utils image publish Manual"
+.SH NAME
+aliyun-img-utils\-image\-publish \- Publish a compute image in a set of regions.
+.SH SYNOPSIS
+.B aliyun-img-utils image publish
+[OPTIONS]
+.SH DESCRIPTION
+.PP
+    Publish a compute image in a set of regions.
+.PP
+    If no regions are provided the image is published to all
+    available regions.
+    
+.SH OPTIONS
+.TP
+\fB\-\-image\-name\fP TEXT
+Name of the image to be published.  [required]
+.TP
+\fB\-\-launch\-permission\fP TEXT
+The launch permission to set for the published image.  [required]
+.TP
+\fB\-\-regions\fP TEXT
+A comma separated list of region ids to publish the provided image in. If no regions are provided the image will be published in all available regions.
+.TP
+\fB\-C,\fP \-\-config\-dir PATH
+Aliyun Image utils config directory to use. Default: ~/.config/aliyun_img_utils/
+.TP
+\fB\-\-profile\fP TEXT
+The configuration profile to use. Expected to match a config file in config directory. Example: production, for ~/.config/aliyun_img_utils/production.yaml. The default value is default: ~/.config/aliyun_img_utils/default.yaml
+.TP
+\fB\-\-no\-color\fP
+Remove ANSI color and styling from output.
+.TP
+\fB\-\-verbose\fP
+Display debug level logging to console.
+.TP
+\fB\-\-info\fP
+Display logging info to console. (Default)
+.TP
+\fB\-\-quiet\fP
+Display only errors to console.
+.TP
+\fB\-\-access\-key\fP TEXT
+Access key used for authentication of requests.
+.TP
+\fB\-\-access\-secret\fP TEXT
+Access secret used for authentication of requests.
+.TP
+\fB\-\-bucket\-name\fP TEXT
+Storage bucket to store uploaded images.
+.TP
+\fB\-\-region\fP TEXT
+The region to use for the image requests.
