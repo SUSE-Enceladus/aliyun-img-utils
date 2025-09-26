@@ -285,6 +285,12 @@ def upload(
     type=click.IntRange(min=5),
     help='Size root disk in GB. Default is 20GB.'
 )
+@click.option(
+    '--nvme-support',
+    'nvme_support',
+    is_flag=True,
+    help='Adds the NVME support flag to the image created.'
+)
 @add_options(shared_options)
 @click.pass_context
 def create(
@@ -295,6 +301,7 @@ def create(
     blob_name,
     force_replace_image,
     disk_size,
+    nvme_support,
     **kwargs
 ):
     """
@@ -320,6 +327,9 @@ def create(
 
         if disk_size:
             keyword_args['disk_image_size'] = disk_size
+
+        if nvme_support:
+            keyword_args['nvme_support'] = nvme_support
 
         image_id = aliyun_image.create_compute_image(
             image_name,
