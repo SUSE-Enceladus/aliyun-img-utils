@@ -24,7 +24,7 @@
 %global _sitelibdir %{%{pythons}_sitelib}
 
 Name:           python-aliyun-img-utils
-Version:        2.4.0
+Version:        2.5.0
 Release:        0
 Summary:        Command line utility for handling images in the Aliyun Cloud
 License:        GPL-3.0-or-later
