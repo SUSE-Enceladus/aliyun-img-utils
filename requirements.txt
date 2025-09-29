@@ -2,5 +2,5 @@ click
 oss2
 PyYAML
 aliyun-python-sdk-core
-aliyun-python-sdk-ecs
+aliyun-python-sdk-ecs>=4.24.77
 python-dateutil
