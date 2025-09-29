@@ -230,7 +230,8 @@ class TestAliyunImage(object):
             'test-image',
             'test description',
             'test-blob.qcow2',
-            'SLES'
+            'SLES',
+            nvme_support=True
         )
         assert result == 'm-123'
 

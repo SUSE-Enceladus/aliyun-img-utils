@@ -89,7 +89,7 @@ def test_cli_create_image(mock_img_class):
         '12345', '--access-secret', '54321', '--region', 'cn-beijing',
         '--bucket-name', 'test-bucket', '--image-description', 'test desc',
         '--platform', 'SLES', '--blob-name', 'test.blob.qcow2', '--disk-size',
-        20
+        '20', '--nvme-support'
     ]
 
     runner = CliRunner()

@@ -424,7 +424,8 @@ class AliyunImage(object):
         arch='x86_64',
         disk_image_size=20,
         force_replace_image=False,
-        timeout=3600
+        timeout=3600,
+        nvme_support=False
     ):
         """
         Create compute image in current region from storage blob.
@@ -451,6 +452,8 @@ class AliyunImage(object):
         request.set_OSType(os_type)
         request.set_Architecture(arch)
         request.set_Platform(platform)
+        if nvme_support:
+            request.set_Features({'NvmeSupport': 'supported'})
 
         try:
             response = json.loads(
