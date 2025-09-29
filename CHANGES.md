@@ -1,3 +1,10 @@
+v2.5.0 (2025-09-29)
+===================
+
+- Add obs publish github workflow
+- Includes a new flag to add nvme support for image create operations
+- Fixes possible undefined variable access
+
 v2.4.0 (2025-05-19)
 ===================
 
