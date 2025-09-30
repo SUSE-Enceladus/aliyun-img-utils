@@ -37,7 +37,7 @@ BuildRequires:  %{pythons}-PyYAML
 BuildRequires:  %{pythons}-click
 BuildRequires:  %{pythons}-oss2
 BuildRequires:  %{pythons}-aliyun-python-sdk-core
-BuildRequires:  %{pythons}-aliyun-python-sdk-ecs
+BuildRequires:  %{pythons}-aliyun-python-sdk-ecs >= 4.24.77
 BuildRequires:  %{pythons}-python-dateutil
 BuildRequires:  %{pythons}-pytest
 BuildRequires:  %{pythons}-coverage
@@ -49,7 +49,7 @@ Requires:       %{pythons}-PyYAML
 Requires:       %{pythons}-click
 Requires:       %{pythons}-oss2
 Requires:       %{pythons}-aliyun-python-sdk-core
-Requires:       %{pythons}-aliyun-python-sdk-ecs
+Requires:       %{pythons}-aliyun-python-sdk-ecs >= 4.24.77
 Requires:       %{pythons}-python-dateutil
 
 BuildArch:      noarch
