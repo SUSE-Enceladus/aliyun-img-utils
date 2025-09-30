@@ -1,3 +1,8 @@
+v2.5.1 (2025-09-30)
+===================
+
+- Fix version requirement on Aliyun ECS SDK package
+
 v2.5.0 (2025-09-29)
 ===================
 
