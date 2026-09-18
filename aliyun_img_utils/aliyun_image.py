@@ -104,7 +104,8 @@ class AliyunImage(object):
         log_callback=None,
         transfer_acceleration=True,
         timeout=180,
-        deprecation_period=6
+        deprecation_period=6,
+        ignored_regions=None
     ):
         """Initialize class and setup logging."""
         self.access_key = access_key
@@ -112,6 +113,7 @@ class AliyunImage(object):
         self.transfer_acceleration = transfer_acceleration
         self.timeout = timeout
         self.deprecation_period = deprecation_period
+        self.ignored_regions = ignored_regions or []
         self._region = region
         self._bucket_name = bucket_name
         self._bucket_client = None
@@ -803,7 +805,11 @@ class AliyunImage(object):
 
         regions = []
         for region in response['Regions']['Region']:
-            regions.append(region['RegionId'])
+            region_id = region['RegionId']
+
+            if region_id in self.ignored_regions:
+                continue
+            regions.append(region_id)
 
         return regions
 

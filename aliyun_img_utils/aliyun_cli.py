@@ -94,6 +94,13 @@ shared_options = [
         '--region',
         type=click.STRING,
         help='The region to use for the image requests.'
+    ),
+    click.option(
+        '--ignored-regions',
+        type=click.STRING,
+        help='A comma separated list of region ids to ignore. These '
+             'regions will be excluded from any operation across all '
+             'available regions.'
     )
 ]
 
@@ -221,7 +228,8 @@ def upload(
             log_level=config_data.log_level,
             log_callback=logger,
             transfer_acceleration=transfer_acceleration,
-            timeout=timeout
+            timeout=timeout,
+            ignored_regions=config_data.ignored_regions
         )
 
         keyword_args = {
@@ -318,7 +326,8 @@ def create(
             config_data.region,
             config_data.bucket_name,
             log_level=config_data.log_level,
-            log_callback=logger
+            log_callback=logger,
+            ignored_regions=config_data.ignored_regions
         )
 
         keyword_args = {
@@ -381,7 +390,8 @@ def delete(context, image_name, force, regions, **kwargs):
             config_data.region,
             config_data.bucket_name,
             log_level=config_data.log_level,
-            log_callback=logger
+            log_callback=logger,
+            ignored_regions=config_data.ignored_regions
         )
 
         keyword_args = {
@@ -435,7 +445,8 @@ def replicate(context, image_name, regions, **kwargs):
             config_data.region,
             config_data.bucket_name,
             log_level=config_data.log_level,
-            log_callback=logger
+            log_callback=logger,
+            ignored_regions=config_data.ignored_regions
         )
 
         keyword_args = {}
@@ -493,7 +504,8 @@ def publish(context, image_name, launch_permission, regions, **kwargs):
             config_data.region,
             config_data.bucket_name,
             log_level=config_data.log_level,
-            log_callback=logger
+            log_callback=logger,
+            ignored_regions=config_data.ignored_regions
         )
 
         keyword_args = {}
@@ -568,7 +580,8 @@ def deprecate(
             config_data.bucket_name,
             log_level=config_data.log_level,
             log_callback=logger,
-            deprecation_period=deprecation_period
+            deprecation_period=deprecation_period,
+            ignored_regions=config_data.ignored_regions
         )
 
         keyword_args = {}
@@ -626,7 +639,8 @@ def activate(context, image_name, regions, **kwargs):
             config_data.region,
             config_data.bucket_name,
             log_level=config_data.log_level,
-            log_callback=logger
+            log_callback=logger,
+            ignored_regions=config_data.ignored_regions
         )
 
         keyword_args = {}
@@ -680,7 +694,8 @@ def info(context, image_name, image_id, status, **kwargs):
             config_data.region,
             config_data.bucket_name,
             log_level=config_data.log_level,
-            log_callback=logger
+            log_callback=logger,
+            ignored_regions=config_data.ignored_regions
         )
 
         image_data = aliyun_image.get_compute_image(
@@ -719,7 +734,8 @@ def share_permission(context, image_name, **kwargs):
             config_data.region,
             config_data.bucket_name,
             log_level=config_data.log_level,
-            log_callback=logger
+            log_callback=logger,
+            ignored_regions=config_data.ignored_regions
         )
 
         keyword_args = {}
