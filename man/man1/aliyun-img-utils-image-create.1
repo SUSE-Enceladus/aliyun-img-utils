@@ -1,4 +1,4 @@
-.TH "ALIYUN-IMG-UTILS IMAGE CREATE" "1" "2025-05-19" "2.3.0" "aliyun-img-utils image create Manual"
+.TH "ALIYUN-IMG-UTILS IMAGE CREATE" "1" "2026-09-18" "2.5.1" "aliyun-img-utils image create Manual"
 .SH NAME
 aliyun-img-utils\-image\-create \- Create a compute image from a qcow2 image...
 .SH SYNOPSIS
@@ -6,8 +6,8 @@ aliyun-img-utils\-image\-create \- Create a compute image from a qcow2 image...
 [OPTIONS]
 .SH DESCRIPTION
 .PP
-    Create a compute image from a qcow2 image in storage.
-    
+Create a compute image from a qcow2 image in storage.
+.PP
 .SH OPTIONS
 .TP
 \fB\-\-image\-name\fP TEXT
@@ -27,6 +27,9 @@ Delete the compute image prior to creation if it already exists.
 .TP
 \fB\-\-disk\-size\fP INTEGER RANGE
 Size root disk in GB. Default is 20GB.  [x>=5]
+.TP
+\fB\-\-nvme\-support\fP
+Adds the NVME support flag to the image created.
 .TP
 \fB\-C,\fP \-\-config\-dir PATH
 Aliyun Image utils config directory to use. Default: ~/.config/aliyun_img_utils/
@@ -57,3 +60,6 @@ Storage bucket to store uploaded images.
 .TP
 \fB\-\-region\fP TEXT
 The region to use for the image requests.
+.TP
+\fB\-\-ignored\-regions\fP TEXT
+A comma separated list of region ids to ignore. These regions will be excluded from any operation across all available regions.

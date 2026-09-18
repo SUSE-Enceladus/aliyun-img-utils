@@ -1,4 +1,4 @@
-.TH "ALIYUN-IMG-UTILS IMAGE DELETE" "1" "2025-05-19" "2.3.0" "aliyun-img-utils image delete Manual"
+.TH "ALIYUN-IMG-UTILS IMAGE DELETE" "1" "2026-09-18" "2.5.1" "aliyun-img-utils image delete Manual"
 .SH NAME
 aliyun-img-utils\-image\-delete \- Delete a compute image and optionally the...
 .SH SYNOPSIS
@@ -46,3 +46,6 @@ Storage bucket to store uploaded images.
 .TP
 \fB\-\-region\fP TEXT
 The region to use for the image requests.
+.TP
+\fB\-\-ignored\-regions\fP TEXT
+A comma separated list of region ids to ignore. These regions will be excluded from any operation across all available regions.
