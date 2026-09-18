@@ -262,7 +262,7 @@ class TestAliyunImage(object):
         with raises(AliyunException):
             self.image.get_regions()
 
-    def test_get_regions_ignored(self):
+    def test_get_ignored_regions(self):
         response = json.dumps({
             'Regions': {'Region': [
                 {'RegionId': 'cn-beijing'},
