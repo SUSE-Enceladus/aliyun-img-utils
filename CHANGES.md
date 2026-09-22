@@ -1,3 +1,8 @@
+v2.6.0 (2026-09-22)
+===================
+
+- Implements a new parameter to ignore certain regions if required
+
 v2.5.1 (2025-09-30)
 ===================
 
