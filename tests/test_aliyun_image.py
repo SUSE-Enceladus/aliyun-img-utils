@@ -262,6 +262,21 @@ class TestAliyunImage(object):
         with raises(AliyunException):
             self.image.get_regions()
 
+    def test_get_ignored_regions(self):
+        response = json.dumps({
+            'Regions': {'Region': [
+                {'RegionId': 'cn-beijing'},
+                {'RegionId': 'cn-shanghai'}
+            ]}
+        })
+        client = Mock()
+        client.do_action_with_exception.return_value = response
+        self.image._compute_client = client
+        self.image.ignored_regions = ['cn-shanghai']
+
+        regions = self.image.get_regions()
+        assert regions == ['cn-beijing']
+
     def test_bucket_name_var(self):
         client = Mock()
         self.image._bucket_client = client

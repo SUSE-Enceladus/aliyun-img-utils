@@ -1,4 +1,4 @@
-.TH "ALIYUN-IMG-UTILS IMAGE DEPRECATE" "1" "2025-05-19" "2.3.0" "aliyun-img-utils image deprecate Manual"
+.TH "ALIYUN-IMG-UTILS IMAGE DEPRECATE" "1" "2026-09-18" "2.5.1" "aliyun-img-utils image deprecate Manual"
 .SH NAME
 aliyun-img-utils\-image\-deprecate \- Deprecate compute in a set of regions.
 .SH SYNOPSIS
@@ -6,11 +6,11 @@ aliyun-img-utils\-image\-deprecate \- Deprecate compute in a set of regions.
 [OPTIONS]
 .SH DESCRIPTION
 .PP
-    Deprecate compute in a set of regions.
+Deprecate compute in a set of regions.
 .PP
-    If no regions are provided the image is deprecated in all
-    available regions.
-    
+If no regions are provided the image is deprecated in all
+available regions.
+.PP
 .SH OPTIONS
 .TP
 \fB\-\-image\-name\fP TEXT
@@ -54,3 +54,6 @@ Storage bucket to store uploaded images.
 .TP
 \fB\-\-region\fP TEXT
 The region to use for the image requests.
+.TP
+\fB\-\-ignored\-regions\fP TEXT
+A comma separated list of region ids to ignore. These regions will be excluded from any operation across all available regions.

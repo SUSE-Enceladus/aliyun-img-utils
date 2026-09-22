@@ -46,6 +46,7 @@ The following configration options are available in a configuration profile:
 - access_key
 - access_secret
 - bucket_name
+- ignored_regions
 
 An example configuration profile may look like:
 
@@ -54,7 +55,14 @@ region: cn-beijing
 access_key: FakeKEY
 access_secret: FAKESecret
 bucket_name: smarlow-testing
+ignored_regions:
+  - cn-shanghai
+  - cn-hangzhou
 ```
+
+The *ignored_regions* option is a list of region ids that will be excluded
+from the region list returned by *get_regions*, and therefore from any
+operation that acts across all available regions.
 
 When running any command the profile can be chosen via the *--profile* option.
 For example, *aliyun-img-utils image upload --profile production* would pull
@@ -320,7 +328,7 @@ aliyun_image.wait_on_compute_image_delete('i-123456789')
 # Return True if the image exists based on image name
 exists = aliyun_image.image_exists('test-image-v20220202')
 
-# 
+# Return True if the image tarball exists based on file name
 exists = aliyun_image.image_tarball_exists('test_image.qcow2')
 
 # Get image info as a dictionary

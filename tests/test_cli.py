@@ -61,6 +61,26 @@ def test_cli_delete_image(mock_img_class):
 
 
 @patch('aliyun_img_utils.aliyun_cli.AliyunImage')
+def test_cli_delete_image_ignored_regions(mock_img_class):
+    image_class = MagicMock()
+    mock_img_class.return_value = image_class
+
+    args = [
+        'image', 'delete', '--image-name', 'test-image', '--access-key',
+        '12345', '--access-secret', '54321', '--region', 'cn-beijing',
+        '--bucket-name', 'test-bucket',
+        '--ignored-regions', 'cn-shanghai,cn-hangzhou'
+    ]
+
+    runner = CliRunner()
+    result = runner.invoke(main, args, input='y\n')
+    assert result.exit_code == 0
+
+    kwargs = mock_img_class.call_args.kwargs
+    assert kwargs['ignored_regions'] == ['cn-shanghai', 'cn-hangzhou']
+
+
+@patch('aliyun_img_utils.aliyun_cli.AliyunImage')
 def test_cli_upload_tarball(mock_img_class):
     image_class = MagicMock()
     mock_img_class.return_value = image_class

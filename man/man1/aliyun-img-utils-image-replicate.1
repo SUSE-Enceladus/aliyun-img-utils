@@ -1,4 +1,4 @@
-.TH "ALIYUN-IMG-UTILS IMAGE REPLICATE" "1" "2025-05-19" "2.3.0" "aliyun-img-utils image replicate Manual"
+.TH "ALIYUN-IMG-UTILS IMAGE REPLICATE" "1" "2026-09-18" "2.5.1" "aliyun-img-utils image replicate Manual"
 .SH NAME
 aliyun-img-utils\-image\-replicate \- Replicate a compute image to a set of...
 .SH SYNOPSIS
@@ -6,11 +6,11 @@ aliyun-img-utils\-image\-replicate \- Replicate a compute image to a set of...
 [OPTIONS]
 .SH DESCRIPTION
 .PP
-    Replicate a compute image to a set of regions.
+Replicate a compute image to a set of regions.
 .PP
-    If no regions are provided the image is replicated to all
-    available regions.
-    
+If no regions are provided the image is replicated to all
+available regions.
+.PP
 .SH OPTIONS
 .TP
 \fB\-\-image\-name\fP TEXT
@@ -48,3 +48,6 @@ Storage bucket to store uploaded images.
 .TP
 \fB\-\-region\fP TEXT
 The region to use for the image requests.
+.TP
+\fB\-\-ignored\-regions\fP TEXT
+A comma separated list of region ids to ignore. These regions will be excluded from any operation across all available regions.

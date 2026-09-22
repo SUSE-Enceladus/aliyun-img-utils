@@ -59,6 +59,7 @@ defaults = {
     'access_key': None,
     'access_secret': None,
     'bucket_name': None,
+    'ignored_regions': [],
 }
 
 aliyun_img_utils_config = namedtuple(
@@ -177,6 +178,9 @@ def process_shared_options(context_obj, kwargs):
     context_obj['access_key'] = kwargs['access_key']
     context_obj['access_secret'] = kwargs['access_secret']
     context_obj['bucket_name'] = kwargs['bucket_name']
+
+    if kwargs.get('ignored_regions'):
+        context_obj['ignored_regions'] = kwargs['ignored_regions'].split(',')
 
 
 def get_storage_auth(access_key, access_secret):
